@@ -1,2 +1,2 @@
-# vr-brain-demo
-Rendering volumetric 3d scan
+# brain-volume-demo
+Rendering volumetric 3d scan in VR
