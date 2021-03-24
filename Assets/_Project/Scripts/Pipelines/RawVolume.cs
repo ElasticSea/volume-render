@@ -1,5 +1,3 @@
-using Nifti.NET;
-
 namespace Pipelines
 {
     public class RawVolume
