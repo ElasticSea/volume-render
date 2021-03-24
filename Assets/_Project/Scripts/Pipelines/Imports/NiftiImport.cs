@@ -25,7 +25,7 @@ namespace Pipelines.Imports
             }
 
             var bytelen = stream.Length - stream.Position;
-            var data = new BigArray<float>(bytelen);
+            var data = new BigArray<float>(bytelen / sizeof(float));
             var littleEndian = nifti.Header.SourceIsBigEndian() == false;
             ReadFloats(data, stream, littleEndian);
 

@@ -11,13 +11,18 @@ using Debug = UnityEngine.Debug;
 
 public class Import : MonoBehaviour
 {
+    private Stopwatch sw;
+
     public void Awake()
     {
-        var sw = Stopwatch.StartNew();
+        sw = Stopwatch.StartNew();
         
-        var from = @"E:\Brain\Acquired_FA25_downsampled_500um.nii";
+        var from = @"E:\Brain\Acquired_FA25_downsampled_100um.nii";
+        
         var volume = NiftiImport.ReadVolume(from);
-        ImportIt(volume, ChannelDepth.Single_32);
+        Tag("ReadVolume");
+        
+        ImportIt(volume, ChannelDepth.Single32);
         
         
         Debug.Log("elapsed " + sw.ElapsedMilliseconds);
@@ -37,14 +42,16 @@ public class Import : MonoBehaviour
         // var payload = dd.Data as IEnumerable<float>;
     }
 
-    public enum ChannelDepth
+    private void Tag(string message)
     {
-        Single_32, Half_16, Quarter_8
+        print($"{message} took {sw.ElapsedMilliseconds}ms");
+        sw = Stopwatch.StartNew();
     }
 
     public void ImportIt(RawVolume volume, ChannelDepth channelDepth)
     {
         var bounds = GetValidBounds(volume, channelDepth);
+        Tag("ValidBounds");
         var isChanged = volume.Width != bounds.Width ||
                         volume.Height != bounds.Height ||
                         volume.Depth != bounds.Depth;
@@ -52,17 +59,21 @@ public class Import : MonoBehaviour
         if (isChanged)
         {
             volume = volume.Subvolume(bounds);
+            Tag("Subvolume");
         }
+
+        var (normalized, min, max) = volume.Data.Normalize();
+        Tag("normalize");
+        var packed = normalized.Pack(channelDepth);
+        Tag("pack");
         
-        
-       
-        
-        
+        var newVOlume = new Volume(volume.Width, volume.Height, volume.Depth, min, max, channelDepth, packed);
+
     }
 
     private VolumeBounds GetValidBounds(RawVolume volume, ChannelDepth depth)
     {
-        var bytesPerPixel = GetPixelSizeInBytes(depth);
+        var bytesPerPixel = depth.GetByteSize();
 
         var bounds = new VolumeBounds(0, 0, 0, volume.Width, volume.Height, volume.Depth);
 
@@ -70,7 +81,7 @@ public class Import : MonoBehaviour
         bounds.Height = Mathf.Min(bounds.Height, 2048);
         bounds.Depth = Mathf.Min(bounds.Depth, 2048);
         
-        var totalBytes = (long) (bounds.Width * bounds.Height * bounds.Depth) * bytesPerPixel;
+        var totalBytes = (long)bounds.Width * bounds.Height * bounds.Depth * bytesPerPixel;
 
         var textureSizeLimit = 2146435071;
         if (totalBytes > textureSizeLimit )
@@ -102,20 +113,5 @@ public class Import : MonoBehaviour
         var p0 = w * h * d - volume; // whd - volume
         var (r0, r1, r2) = Cubic.RealRoots(p0 / p3, p1 / p3, p2 / p3); // normalize p3
         return (int) Math.Ceiling(Math.Max((float) r0 / 2, 0)); // offset is half
-    }
-
-    private int GetPixelSizeInBytes(ChannelDepth depth)
-    {
-        switch (depth)
-        {
-            case ChannelDepth.Single_32:
-                return 4;
-            case ChannelDepth.Half_16:
-                return 2;
-            case ChannelDepth.Quarter_8:
-                return 1;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(depth), depth, null);
-        }
     }
 }
