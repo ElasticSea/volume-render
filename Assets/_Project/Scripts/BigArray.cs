@@ -6,7 +6,7 @@ public class BigArray<T> : IEnumerable<T>
     private const int ChunkSize = 1024 * 1024; // Must be 2^n in order for the fastmodule to work and under 0X7FEFFFFF
     private const int FastModulo = ChunkSize - 1;
 
-    private readonly T[][] data;
+    public readonly T[][] Data;
         
     public readonly long Length;
 
@@ -16,13 +16,13 @@ public class BigArray<T> : IEnumerable<T>
         var chunk = (int)(length / ChunkSize);
         var index = (int)(length % ChunkSize);
 
-        data = new T[chunk + 1][];
+        Data = new T[chunk + 1][];
         var i = 0;
         for (; i < chunk; i++)
         {
-            data[i] = new T[ChunkSize];
+            Data[i] = new T[ChunkSize];
         }
-        data[i] = new T[index];
+        Data[i] = new T[index];
     }
 
     public T this[long i]
@@ -31,13 +31,13 @@ public class BigArray<T> : IEnumerable<T>
         {
             var chunk = (int)(i / ChunkSize);
             var index = (int)(i & FastModulo);
-            return data[chunk][index];
+            return Data[chunk][index];
         }
         set
         {
             var chunk = (int)(i / ChunkSize);
             var index = (int)(i & FastModulo);
-            data[chunk][index] = value;
+            Data[chunk][index] = value;
         }
     }
 

@@ -1,6 +1,6 @@
 namespace Pipelines
 {
-    public class VolumeBounds
+    public struct VolumeBounds
     {
         public int X;
         public int Y;

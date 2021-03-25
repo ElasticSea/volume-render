@@ -88,11 +88,6 @@ namespace Pipelines
                                                j * data.Width +
                                                k * data.Width * data.Height;
 
-                            if (targetIndex >= target.Length || sourceIndex >= source.Length ||
-                                targetIndex < 0 || sourceIndex < 0)
-                            {
-                                int d3 = 0;
-                            }
                             target[targetIndex] = source[sourceIndex];
                         }
                     }
@@ -195,6 +190,11 @@ namespace Pipelines
         
            public static BigArray<byte> Pack(this BigArray<float> data, ChannelDepth channelDepth, bool multithreaded = true)
         {
+            if (channelDepth.GetBitsSize() % 8 != 0)
+            {
+                throw new ArgumentException("Partial bytes are not supported");
+            }
+            
             if (multithreaded)
             {
                 return data.PackMt(channelDepth);
@@ -207,22 +207,23 @@ namespace Pipelines
 
         private static BigArray<byte> PackSt(this BigArray<float> data, ChannelDepth channelDepth)
         {
-            var bytes = channelDepth.GetByteSize();
+            var bits = channelDepth.GetBitsSize();
 
-            var newData = new BigArray<byte>((long) data.Length * bytes);
+            var newData = new BigArray<byte>((long) data.Length * bits / 8);
 
             for (long i = 0; i < data.Length; i++)
             {
-                WriteNormalized(data[i], bytes, newData, i);
+                WriteNormalized(data[i], bits, newData, i);
             }
             
             return newData;
         }
 
-        private static void WriteNormalized(double t, int bytes, BigArray<byte> destination, long destinationIndex)
+        private static void WriteNormalized(double t, int bits, BigArray<byte> destination, long destinationIndex)
         {
-            var integer = (ulong) (((1 << (bytes * 8)) - 1) * t);
-                
+            var integer = (ulong) (((1 << (bits)) - 1) * t);
+
+            var bytes = bits / 8;
             for (var i = 0; i < bytes; i++)
             {
                 destination[destinationIndex * bytes + i] = (byte)((integer >> (i * 8)) & 255);
@@ -242,10 +243,10 @@ namespace Pipelines
                     return (startIndex, endIndex);
                 });
 
-            var bytes = channelDepth.GetByteSize();
+            var bits = channelDepth.GetBitsSize();
             var jobs2 = jobs.Select(i => (i.startIndex, i.endIndex));
 
-            var newData = new BigArray<byte>((long) data.Length * bytes);
+            var newData = new BigArray<byte>((long) data.Length * bits / 8);
                 
             Parallel.ForEach(jobs2, (tuple, state) =>
             {
@@ -253,7 +254,7 @@ namespace Pipelines
 
                 for (long i = startIndex; i < endIndex; i++)
                 {
-                    WriteNormalized(data[i], bytes, newData, i);
+                    WriteNormalized(data[i], bits, newData, i);
                 }
             });
             

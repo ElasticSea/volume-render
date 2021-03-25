@@ -7,17 +7,17 @@ namespace Pipelines
         public int Depth { get; }
         public double Min { get; }
         public double Max { get; }
-        public ChannelDepth ChannelDepth { get; }
+        public int ChannelDepthBits { get; }
         public BigArray<byte> Data { get; }
 
-        public Volume(int width, int height, int depth, double min, double max, ChannelDepth channelDepth, BigArray<byte> data)
+        public Volume(int width, int height, int depth, double min, double max, int channelDepthBits, BigArray<byte> data)
         {
             Width = width;
             Height = height;
             Depth = depth;
             Min = min;
             Max = max;
-            ChannelDepth = channelDepth;
+            ChannelDepthBits = channelDepthBits;
             Data = data;
         }
     }
