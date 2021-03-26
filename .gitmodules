@@ -1,3 +1,6 @@
 [submodule "Assets/Nifti.NET"]
 	path = Assets/Nifti.NET
 	url = https://github.com/ElasticSea/Nifti.NET.git
+[submodule "Assets/unity-framework"]
+	path = Assets/unity-framework
+	url = https://github.com/ElasticSea/unity-framework
