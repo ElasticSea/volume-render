@@ -18,5 +18,15 @@ namespace Pipelines
             Height = height;
             Depth = depth;
         }
+        
+        public static bool operator ==(VolumeBounds left, VolumeBounds right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(VolumeBounds left, VolumeBounds right)
+        {
+            return !left.Equals(right);
+        }
     }
 }

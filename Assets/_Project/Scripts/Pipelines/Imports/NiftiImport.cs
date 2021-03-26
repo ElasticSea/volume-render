@@ -1,34 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Nifti.NET;
 
 namespace Pipelines.Imports
 {
-    public class NiftiImport
+    public class NiftiImport : IRawVolumeImport
     {
-        public static Nifti.NET.Nifti ReadHeader(string path)
+        private string path;
+
+        public NiftiImport(string path)
         {
-            var stream = File.OpenRead(path);
-
-            var result = new Nifti.NET.Nifti();
-            var header = NiftiFile.ReadHeaderFromStream(stream);
-            result.Header = header;
-
-            return result;
-        }
-        
-        public static RawVolume ReadVolume(string path)
-        {
-            var stream = File.OpenRead(path);
-
-            var result = new Nifti.NET.Nifti();
-            var header = NiftiFile.ReadHeaderFromStream(stream);
-            result.Header = header;
-
-            return ReadVolume(result, stream);
+            this.path = path;
         }
 
         private static RawVolume ReadVolume(Nifti.NET.Nifti nifti, FileStream stream)
@@ -150,6 +134,33 @@ namespace Pipelines.Imports
             }
 
             return BitConverter.ToSingle(value, index);
+        }
+
+        public RawVolumeHeader ReadHeader()
+        {
+            var stream = File.OpenRead(path);
+
+            var result = new Nifti.NET.Nifti();
+            var header = NiftiFile.ReadHeaderFromStream(stream);
+            result.Header = header;
+
+            return new RawVolumeHeader()
+            {
+                Width = result.Dimensions[0],
+                Height = result.Dimensions[1],
+                Depth = result.Dimensions[2],
+            };
+        }
+
+        public RawVolume ReadData()
+        {
+            var stream = File.OpenRead(path);
+
+            var result = new Nifti.NET.Nifti();
+            var header = NiftiFile.ReadHeaderFromStream(stream);
+            result.Header = header;
+
+            return ReadVolume(result, stream);
         }
     }
 }
