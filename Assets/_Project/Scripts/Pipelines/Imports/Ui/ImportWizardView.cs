@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ElasticSea.Framework.Extensions;
 using ElasticSea.Framework.Util;
 using Pipelines;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Debug = UnityEngine.Debug;
 
 public class ImportWizardView : MonoBehaviour
 {
@@ -34,8 +36,9 @@ public class ImportWizardView : MonoBehaviour
         {
             HandleErrors(() =>
             {
+                var sw = Stopwatch.StartNew();
                 importWizard.Import();
-                ShowMessage($"Volume successfully created at {importWizard.VolumePath}", HelpBoxMessageType.Info);
+                ShowMessage($"Volume successfully created at {importWizard.VolumePath} in {sw.ElapsedMilliseconds}ms", HelpBoxMessageType.Info);
             });
         };
 
