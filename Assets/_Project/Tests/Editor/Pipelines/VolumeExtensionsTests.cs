@@ -16,7 +16,7 @@ namespace Tests.Pipelines
             };
 
             var expected = new RawVolume(1, 1, 1, data);
-            var actual = expected.Subvolume(new VolumeBounds(0, 0, 0, 1, 1, 1), multithreaded);
+            var actual = expected.Crop(new VolumeBounds(0, 0, 0, 1, 1, 1), multithreaded);
 
             Assert.AreEqual(42, actual.Data[0]);
         }
@@ -42,7 +42,7 @@ namespace Tests.Pipelines
             };
 
             var expected = new RawVolume(3, 3, 3, data);
-            var actual = expected.Subvolume(new VolumeBounds(1, 1, 1, 1, 1, 1), multithreaded);
+            var actual = expected.Crop(new VolumeBounds(1, 1, 1, 1, 1, 1), multithreaded);
 
             Assert.AreEqual(1, actual.Data[0]);
         }
@@ -67,7 +67,7 @@ namespace Tests.Pipelines
                 [i++] = 0, [i++] = 7, [i++] = 8,
             };
 
-            var actual = new RawVolume(3, 3, 3, data).Subvolume(new VolumeBounds(1, 1, 1, 2, 2, 2), multithreaded);
+            var actual = new RawVolume(3, 3, 3, data).Crop(new VolumeBounds(1, 1, 1, 2, 2, 2), multithreaded);
 
             i = 0;
             var expected = new BigArray<float>(2 * 2 * 2)

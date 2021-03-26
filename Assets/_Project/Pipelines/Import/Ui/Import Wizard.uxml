@@ -7,8 +7,9 @@
                 <ui:Label text="Channel Depth" display-tooltip-when-elided="true" style="width: 150px; margin-left: 3px; margin-right: 3px; margin-top: 1px; margin-bottom: 1px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
                 <ui:VisualElement name="container" style="flex-direction: row;" />
             </ui:VisualElement>
+            <ui:Toggle label="Multithreaded" name="multithreaded" />
             <ui:Button text="Import" display-tooltip-when-elided="true" name="import" />
-            <ui:HelpBox message-type="Error" text="Test" name="info" />
+            <ui:HelpBox message-type="Error" text="Test" name="info" value="true" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

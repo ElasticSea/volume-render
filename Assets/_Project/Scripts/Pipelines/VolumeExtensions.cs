@@ -8,7 +8,7 @@ namespace Pipelines
 {
     public static class VolumeExtensions
     {
-        public static RawVolume Subvolume(this RawVolume data, VolumeBounds bounds, bool multithreaded = true)
+        public static RawVolume Crop(this RawVolume data, VolumeBounds bounds, bool multithreaded = true)
         {
             if (multithreaded)
             {

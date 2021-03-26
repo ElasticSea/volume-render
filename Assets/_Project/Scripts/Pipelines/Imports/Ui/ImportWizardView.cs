@@ -20,6 +20,7 @@ public class ImportWizardView : MonoBehaviour
         var import = root.Q<Button>("import");
         var name = root.Q<TextField>("name");
         var source = root.Q<TextField>("source");
+        var multithreaded = root.Q<Toggle>("multithreaded");
         var infoBox = root.Q<HelpBox>("info");
         infoBox.visible = false;
 
@@ -58,6 +59,16 @@ public class ImportWizardView : MonoBehaviour
             HandleErrors(() =>
             {
                 importWizard.SourcePath = evt.newValue;
+                TriggerChange();
+            });
+        });
+
+        multithreaded.value = importWizard.Multithreaded;
+        multithreaded.RegisterValueChangedCallback(evt =>
+        {
+            HandleErrors(() =>
+            {
+                importWizard.Multithreaded = evt.newValue;
                 TriggerChange();
             });
         });

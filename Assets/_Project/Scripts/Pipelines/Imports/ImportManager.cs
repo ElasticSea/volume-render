@@ -1,4 +1,7 @@
 using System;
+using System.Runtime;
+using System.Threading;
+using System.Threading.Tasks;
 using MathNet.Numerics.RootFinding;
 using UnityEngine;
 
@@ -6,30 +9,31 @@ namespace Pipelines.Imports
 {
     public class ImportManager
     {
-        public static Volume Import(IRawVolumeImport source, ChannelDepth channelDepth)
+        public static Volume Import(IRawVolumeImport source, ChannelDepth channelDepth, bool multithreaded = true)
         {
-            var header = source.ReadHeader();
-            var bounds = header.Bounds;
+            var originalBounds = source.ReadHeader().Bounds;
 
-            var fit = GetValidBounds(bounds, channelDepth);
+            var targetBounds = GetValidBounds(originalBounds, channelDepth);
 
-            var needToCrop = fit.Width != bounds.Width || fit.Height != bounds.Height || fit.Depth != bounds.Depth;
+            var originalVolume = source.ReadData();
+
+            var needToCrop = targetBounds.Width != originalBounds.Width ||
+                             targetBounds.Height != originalBounds.Height ||
+                             targetBounds.Depth != originalBounds.Depth;
             if (needToCrop)
             {
-                //
+                originalVolume = originalVolume.Crop(targetBounds, multithreaded);
             }
 
-            var rawVolume = source.ReadData();
+            var (normalized, min, max) = originalVolume.Data.Normalize(multithreaded);
 
-            if (needToCrop)
-            {
-                rawVolume = rawVolume.Subvolume(bounds);
-            }
+            var packed = normalized.Pack(channelDepth, multithreaded);
 
-            var (normalized, min, max) = rawVolume.Data.Normalize();
-            var packed = normalized.Pack(channelDepth);
-
-            return new Volume(new VolumeData(rawVolume.Width, rawVolume.Height, rawVolume.Depth, min, max, channelDepth.GetBitsSize(), packed));
+            var volumeData = new VolumeData(originalVolume.Width, originalVolume.Height, originalVolume.Depth, min, max,
+                channelDepth.GetBitsSize(), packed);
+            var import = new Volume(volumeData);
+            
+            return import;
         }
 
         public static VolumeBounds GetValidBounds(VolumeBounds bounds, ChannelDepth depth)

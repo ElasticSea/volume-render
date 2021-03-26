@@ -390,3 +390,4 @@ MonoBehaviour:
   sourcePath: 
   volumeName: volume
   channelDepth: 2
+  multithreaded: 1

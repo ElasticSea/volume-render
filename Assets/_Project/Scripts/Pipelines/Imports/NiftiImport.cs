@@ -9,13 +9,15 @@ namespace Pipelines.Imports
     public class NiftiImport : IRawVolumeImport
     {
         private string path;
+        private bool multithreaded;
 
-        public NiftiImport(string path)
+        public NiftiImport(string path, bool multithreaded = true)
         {
             this.path = path;
+            this.multithreaded = multithreaded;
         }
 
-        private static RawVolume ReadVolume(Nifti.NET.Nifti nifti, FileStream stream)
+        private static RawVolume ReadVolume(Nifti.NET.Nifti nifti, FileStream stream, bool multithreaded = true)
         {
             if (nifti.Header.datatype != NiftiHeader.DT_FLOAT32)
             {
@@ -25,7 +27,7 @@ namespace Pipelines.Imports
             var bytelen = stream.Length - stream.Position;
             var data = new BigArray<float>(bytelen / sizeof(float));
             var littleEndian = nifti.Header.SourceIsBigEndian() == false;
-            RealFloats(data, stream, littleEndian);
+            RealFloats(data, stream, littleEndian, multithreaded);
 
             var width = nifti.Dimensions[0];
             var height = nifti.Dimensions[1];
@@ -138,29 +140,32 @@ namespace Pipelines.Imports
 
         public RawVolumeHeader ReadHeader()
         {
-            var stream = File.OpenRead(path);
-
-            var result = new Nifti.NET.Nifti();
-            var header = NiftiFile.ReadHeaderFromStream(stream);
-            result.Header = header;
-
-            return new RawVolumeHeader()
+            using (var stream = File.OpenRead(path))
             {
-                Width = result.Dimensions[0],
-                Height = result.Dimensions[1],
-                Depth = result.Dimensions[2],
-            };
+
+                var result = new Nifti.NET.Nifti();
+                var header = NiftiFile.ReadHeaderFromStream(stream);
+                result.Header = header;
+
+                return new RawVolumeHeader()
+                {
+                    Width = result.Dimensions[0],
+                    Height = result.Dimensions[1],
+                    Depth = result.Dimensions[2],
+                };
+            }
         }
 
         public RawVolume ReadData()
         {
-            var stream = File.OpenRead(path);
+            using (var stream = File.OpenRead(path))
+            {
+                var result = new Nifti.NET.Nifti();
+                var header = NiftiFile.ReadHeaderFromStream(stream);
+                result.Header = header;
 
-            var result = new Nifti.NET.Nifti();
-            var header = NiftiFile.ReadHeaderFromStream(stream);
-            result.Header = header;
-
-            return ReadVolume(result, stream);
+                return ReadVolume(result, stream, multithreaded);
+            }
         }
     }
 }
