@@ -32,6 +32,13 @@ namespace Pipelines.Imports
             var volumeData = new VolumeData(originalVolume.Width, originalVolume.Height, originalVolume.Depth, min, max,
                 channelDepth.GetBitsSize(), packed);
             var import = new Volume(volumeData);
+
+            // Attempt to force the GC release LOH memory and return the memory to OS
+            // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
+            for (var i = 0; i < 16; i++)
+            {
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+            }
             
             return import;
         }
