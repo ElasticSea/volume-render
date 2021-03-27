@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement picking-mode="Ignore" style="width: 100%; height: 100%; flex-direction: row-reverse; opacity: 1;">
+        <ui:VisualElement picking-mode="Ignore" style="width: 400px; justify-content: flex-end; display: flex; visibility: visible;">
+            <ui:VisualElement style="background-color: rgb(210, 210, 210);">
+                <ui:TextField name="alpha" picking-mode="Ignore" label="Alpha" value="filler text" text="filler text" />
+                <ui:TextField name="alphaThreshold" picking-mode="Ignore" label="Alpha Threshold" value="filler text" text="filler text" />
+                <ui:TextField name="stepDistance" picking-mode="Ignore" label="Step Distance" value="filler text" text="filler text" />
+                <ui:Slider name="minClipThreshold" picking-mode="Ignore" label="Clip Minimum Threashold" value="filler text" text="filler text" high-value="1" />
+                <ui:Slider name="maxClipThreshold" picking-mode="Ignore" label="Clip Maximum Threashold" value="filler text" text="filler text" high-value="1" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
