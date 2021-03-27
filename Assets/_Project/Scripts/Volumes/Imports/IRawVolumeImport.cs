@@ -1,8 +1,8 @@
-namespace Pipelines.Imports
+namespace Volumes.Imports
 {
     public interface IRawVolumeImport
     {
-        RawVolumeHeader ReadHeader();
+        RawVolumeMetadata ReadHeader();
         RawVolume ReadData();
     }
 }

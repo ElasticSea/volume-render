@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Pipelines
+namespace Volumes
 {
     public static class VolumeExtensions
     {

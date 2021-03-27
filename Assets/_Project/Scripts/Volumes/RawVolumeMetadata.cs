@@ -1,6 +1,6 @@
-namespace Pipelines.Imports
+namespace Volumes
 {
-    public class RawVolumeHeader
+    public class RawVolumeMetadata
     {
         public int Width;
         public int Height;

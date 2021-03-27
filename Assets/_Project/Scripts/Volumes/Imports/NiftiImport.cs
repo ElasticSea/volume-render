@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Nifti.NET;
 
-namespace Pipelines.Imports
+namespace Volumes.Imports
 {
     public class NiftiImport : IRawVolumeImport
     {
@@ -138,7 +138,7 @@ namespace Pipelines.Imports
             return BitConverter.ToSingle(value, index);
         }
 
-        public RawVolumeHeader ReadHeader()
+        public RawVolumeMetadata ReadHeader()
         {
             using (var stream = File.OpenRead(path))
             {
@@ -147,7 +147,7 @@ namespace Pipelines.Imports
                 var header = NiftiFile.ReadHeaderFromStream(stream);
                 result.Header = header;
 
-                return new RawVolumeHeader()
+                return new RawVolumeMetadata()
                 {
                     Width = result.Dimensions[0],
                     Height = result.Dimensions[1],

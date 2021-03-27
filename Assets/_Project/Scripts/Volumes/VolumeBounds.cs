@@ -1,4 +1,4 @@
-namespace Pipelines
+namespace Volumes
 {
     public struct VolumeBounds
     {
@@ -17,16 +17,6 @@ namespace Pipelines
             Width = width;
             Height = height;
             Depth = depth;
-        }
-        
-        public static bool operator ==(VolumeBounds left, VolumeBounds right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(VolumeBounds left, VolumeBounds right)
-        {
-            return !left.Equals(right);
         }
     }
 }

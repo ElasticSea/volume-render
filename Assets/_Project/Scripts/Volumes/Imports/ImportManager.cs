@@ -1,15 +1,26 @@
 using System;
-using System.Runtime;
-using System.Threading;
-using System.Threading.Tasks;
 using MathNet.Numerics.RootFinding;
 using UnityEngine;
 
-namespace Pipelines.Imports
+namespace Volumes.Imports
 {
     public class ImportManager
     {
         public static Volume Import(IRawVolumeImport source, ChannelDepth channelDepth, bool multithreaded = true)
+        {
+            var volumeData = ImportInternal(source, channelDepth, multithreaded);
+
+            // Attempt to force the GC release LOH memory and return the memory to OS
+            // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
+            for (var i = 0; i < 16; i++)
+            {
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+            }
+            
+            return volumeData;
+        }
+
+        private static Volume ImportInternal(IRawVolumeImport source, ChannelDepth channelDepth, bool multithreaded = true)
         {
             var originalBounds = source.ReadHeader().Bounds;
 
@@ -20,6 +31,8 @@ namespace Pipelines.Imports
             var needToCrop = targetBounds.Width != originalBounds.Width ||
                              targetBounds.Height != originalBounds.Height ||
                              targetBounds.Depth != originalBounds.Depth;
+            
+            // Volume is too large to fit into Texture3D
             if (needToCrop)
             {
                 originalVolume = originalVolume.Crop(targetBounds, multithreaded);
@@ -29,18 +42,12 @@ namespace Pipelines.Imports
 
             var packed = normalized.Pack(channelDepth, multithreaded);
 
-            var volumeData = new VolumeData(originalVolume.Width, originalVolume.Height, originalVolume.Depth, min, max,
-                channelDepth.GetBitsSize(), packed);
-            var import = new Volume(volumeData);
-
-            // Attempt to force the GC release LOH memory and return the memory to OS
-            // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
-            for (var i = 0; i < 16; i++)
-            {
-                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
-            }
+            var w = targetBounds.Width;
+            var h = targetBounds.Height;
+            var d = targetBounds.Depth;
+            var bits = channelDepth.GetBitsSize();
             
-            return import;
+            return new Volume(w, h, d, min, max, bits, packed);
         }
 
         public static VolumeBounds GetValidBounds(VolumeBounds bounds, ChannelDepth depth)

@@ -1,6 +1,6 @@
 using System;
 
-namespace Pipelines
+namespace Volumes
 {
     public static class ChannelDepthExtensions
     {

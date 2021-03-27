@@ -1,8 +1,8 @@
 using System;
 using NUnit.Framework;
-using Pipelines;
+using Volumes;
 
-namespace Tests.Pipelines
+namespace Tests.Editor.Pipelines
 {
     public static class VolumeExtensionsTests
     {
