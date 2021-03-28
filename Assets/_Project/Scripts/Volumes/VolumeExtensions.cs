@@ -49,44 +49,41 @@ namespace Volumes
         private static RawVolume SubvolumeMt(this RawVolume data, VolumeBounds bounds)
         {
             var chunkSize = 128;
-            
+
             var result = new BigArray<float>((long) bounds.Width * bounds.Height * bounds.Depth);
-            
-            var jobs = new List<(int x, int y, int z,int w, int h, int d, BigArray<float> source, BigArray<float> target)>();
-            for (int k = 0; k < bounds.Depth; k += chunkSize)
+
+            var jobs = new List<(int x0, int y0, int z0, int x1, int y1, int z1, BigArray<float> source, BigArray<float> target)>();
+            for (int z = bounds.Z; z < bounds.Z + bounds.Depth; z += chunkSize)
             {
-                for (int j = 0; j < bounds.Height; j += chunkSize)
+                for (int y = bounds.Y; y < bounds.Y + bounds.Height; y += chunkSize)
                 {
-                    for (int i = 0; i < bounds.Width; i += chunkSize)
+                    for (int x = bounds.X; x < bounds.X + bounds.Width; x += chunkSize)
                     {
-                        var jx = i + bounds.X;
-                        var jy = j + bounds.Y;
-                        var jz = k + bounds.Z;
-                        var jw = Math.Min(bounds.X + bounds.Width, jx + chunkSize);
-                        var jh = Math.Min(bounds.Y + bounds.Height, jy + chunkSize);
-                        var jd = Math.Min(bounds.Z + bounds.Depth, jz + chunkSize);
-                        jobs.Add((jx, jy, jz, jw, jh, jd, data.Data, result));
+                        var x1 = Math.Min(data.Width, x + chunkSize);
+                        var y1 = Math.Min(data.Height, y + chunkSize);
+                        var z1 = Math.Min(data.Depth, z + chunkSize);
+                        jobs.Add((x, y, z, x1, y1, z1, data.Data, result));
                     }
                 }
             }
             
             Parallel.ForEach(jobs, (tuple, state) =>
             {
-                var ( x, y, z, w, h, d, source, target) = tuple;
+                var ( x0, y0, z0, x1, y1, z1, source, target) = tuple;
 
-                for (long k = z; k < d; k++)
+                for (long z = z0; z < z1; z++)
                 {
-                    for (long j = y; j < h; j++)
+                    for (long y = y0; y < y1; y++)
                     {
-                        for (long i = x; i < w; i++)
+                        for (long x = x0; x < x1; x++)
                         {
-                            long targetIndex = (i - x) +
-                                               (j - y) * bounds.Width +
-                                               (k - z) * bounds.Width * bounds.Height;
+                            long targetIndex = (x - bounds.X) +
+                                               (y - bounds.Y) * bounds.Width +
+                                               (z - bounds.Z) * bounds.Width * bounds.Height;
                             
-                            long sourceIndex = i +
-                                               j * data.Width +
-                                               k * data.Width * data.Height;
+                            long sourceIndex = x +
+                                               y * data.Width +
+                                               z * data.Width * data.Height;
 
                             target[targetIndex] = source[sourceIndex];
                         }

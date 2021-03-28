@@ -35,7 +35,7 @@ namespace Volumes.Imports
             // Volume is too large to fit into Texture3D
             if (needToCrop)
             {
-                originalVolume = originalVolume.Crop(targetBounds, false);
+                originalVolume = originalVolume.Crop(targetBounds, true);
             }
 
             var (normalized, min, max) = originalVolume.Data.Normalize(multithreaded);
