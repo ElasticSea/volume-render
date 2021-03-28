@@ -1,3 +1,5 @@
+using System;
+
 public class BigArray<T>
 {
     private const int ChunkSize = 1024 * 1024; // Must be 2^n in order for the fastmodule to work and under 0X7FEFFFFF
@@ -37,5 +39,24 @@ public class BigArray<T>
             var index = (int) (i & FastModulo);
             Data[chunk][index] = value;
         }
+    }
+    
+    public T[] ToArray()
+    {
+        if (Length > 2146435071)
+        {
+            throw new ArgumentException("BigArray is too big to fit into regular array");
+        }
+            
+        var output = new T[Length];
+        var offset = 0;
+        for (var i = 0; i < Data.Length; i++)
+        {
+            var chunkLength = Data[i].Length;
+            Array.Copy(Data[i], 0, output, offset, chunkLength);
+            offset += chunkLength;
+        }
+
+        return output;
     }
 }
