@@ -427,8 +427,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 276fda7f6e98f6741b82955837130221, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  path: E:\Brain\volume.vlm
-  texture: {fileID: 11700000, guid: 32c66a3a86b98134c85088b746733011, type: 2}
+  path: E:\Brain\bbb.vlm
+  texture: {fileID: 0}
   volumePrefab: {fileID: 3962048913819361165, guid: 7f1342d0647898741a22f3f21ded0f7f, type: 3}
   volumeSettings: {fileID: 6718778830714394243, guid: 47a18896d1174014693fe1057ce834c3, type: 3}
 --- !u!4 &1770833860
@@ -457,6 +457,7 @@ GameObject:
   - component: {fileID: 1947935350}
   - component: {fileID: 1947935353}
   - component: {fileID: 1947935352}
+  - component: {fileID: 1947935354}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -524,3 +525,16 @@ MonoBehaviour:
   volumeName: volume
   channelDepth: 2
   multithreaded: 1
+--- !u!114 &1947935354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947935349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcd5fa3ca12476b4a8267384a9a42af4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiDocument: {fileID: 1947935350}
