@@ -1,11 +1,43 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace Volumes
 {
     public class VolumeManager
     {
-        public static Volume Load(string path)
+        public static IEnumerable<VolumeSource> ListVolumes(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                foreach (var vlmFile in Directory.EnumerateFiles(path, "*.vlm", SearchOption.AllDirectories))
+                {
+                    var volume = LoadVolumeMetadata(vlmFile);
+                    var voluemSource = new VolumeSource();
+                    voluemSource.FilePath = vlmFile;
+                    voluemSource.Volume = volume;
+                    yield return voluemSource;
+                }
+            }
+        }
+        
+        public static Volume LoadVolumeMetadata(string path)
+        {
+            using var reader = File.OpenRead(path);
+            var dimensionsBuffer = new byte[24];
+            reader.Read(dimensionsBuffer, 0, dimensionsBuffer.Length);
+            var width = BitConverter.ToInt32(dimensionsBuffer, 0);
+            var height = BitConverter.ToInt32(dimensionsBuffer, 4);
+            var depth = BitConverter.ToInt32(dimensionsBuffer, 8);
+            var min = BitConverter.ToSingle(dimensionsBuffer, 12);
+            var max = BitConverter.ToSingle(dimensionsBuffer, 16);
+            var bits = BitConverter.ToInt32(dimensionsBuffer, 20);
+
+            return new Volume(width, height, depth, min, max, bits, null);
+        }
+        
+        public static Volume LoadVolume(string path)
         {
             using var reader = File.OpenRead(path);
             var dimensionsBuffer = new byte[24];
@@ -37,7 +69,7 @@ namespace Volumes
             return new Volume(width, height, depth, min, max, bits, dataArray);
         }
         
-        public static void Save(Volume volume, string path)
+        public static void SaveVolume(Volume volume, string path)
         {
             using var stream = new FileStream(path, FileMode.Create);
             Write(stream, BitConverter.GetBytes(volume.Width));
@@ -67,5 +99,7 @@ namespace Volumes
         {
             stream.Write(bytes, 0, length);
         }
+
+        public static string VolumeDirectoryPath => Path.Combine(Application.persistentDataPath, "Volumes");
     }
 }

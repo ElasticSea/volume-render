@@ -4,42 +4,40 @@ namespace Render.Ui
 {
     public class VolumeSettings : MonoBehaviour
     {
-        [SerializeField] private Material material;
+        [SerializeField] private VolumeRenderManager volumeRenderManager;
 
-        public Material Material
-        {
-            get => material;
-            set => material = value;
-        }
+        private Material material => volumeRenderManager?.VolumeRender?.Material;
 
+        public bool IsActive => material != null;
+        
         public float Alpha
         {
-            get => material.GetFloat("_Alpha");
-            set => material.SetFloat("_Alpha", value);
+            get => material?.GetFloat("_Alpha") ?? -1;
+            set => material?.SetFloat("_Alpha", value);
         }
 
         public float AlphaThreshold
         {
-            get => material.GetFloat("_AlphaThreshold");
-            set => material.SetFloat("_AlphaThreshold", value);
+            get => material?.GetFloat("_AlphaThreshold") ?? -1;
+            set => material?.SetFloat("_AlphaThreshold", value);
         }
 
         public float StepDistance
         {
-            get => material.GetFloat("_StepDistance");
-            set => material.SetFloat("_StepDistance", value);
+            get => material?.GetFloat("_StepDistance") ?? -1;
+            set => material?.SetFloat("_StepDistance", value);
         }
 
         public float ClipMinimumThreashold
         {
-            get => material.GetFloat("_ClipMin");
-            set => material.SetFloat("_ClipMin", Mathf.Clamp01(value));
+            get => material?.GetFloat("_ClipMin") ?? -1;
+            set => material?.SetFloat("_ClipMin", Mathf.Clamp01(value));
         }
 
         public float ClipMaximumThreashold
         {
-            get => material.GetFloat("_ClipMax");
-            set => material.SetFloat("_ClipMax", Mathf.Clamp01(value));
+            get => material?.GetFloat("_ClipMax") ?? -1;
+            set => material?.SetFloat("_ClipMax", Mathf.Clamp01(value));
         }
     }
 }

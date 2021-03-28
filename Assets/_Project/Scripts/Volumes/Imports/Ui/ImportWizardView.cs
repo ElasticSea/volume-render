@@ -40,7 +40,7 @@ namespace Volumes.Imports.Ui
                 {
                     var sw = Stopwatch.StartNew();
                     importWizard.Import();
-                    ShowMessage($"Volume successfully created at {importWizard.VolumePath} in {sw.ElapsedMilliseconds}ms", HelpBoxMessageType.Info);
+                    ShowMessage($"Volume successfully created in {sw.ElapsedMilliseconds}ms", HelpBoxMessageType.Info);
                 });
             };
 

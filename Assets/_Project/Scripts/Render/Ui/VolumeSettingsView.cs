@@ -11,11 +11,14 @@ namespace Render.Ui
         private void Start()
         {
             var root = uiDocument.rootVisualElement;
-            var alpha = root.Q<TextField>("alpha");
-            var alphaThreshold = root.Q<TextField>("alphaThreshold");
-            var stepDistance = root.Q<TextField>("stepDistance");
-            var minClipThreshold = root.Q<Slider>("minClipThreshold");
-            var maxClipThreshold = root.Q<Slider>("maxClipThreshold");
+            var panel = root.Q<VisualElement>("renderPanel");
+            var alpha = panel.Q<TextField>("alpha");
+            var alphaThreshold = panel.Q<TextField>("alphaThreshold");
+            var stepDistance = panel.Q<TextField>("stepDistance");
+            var minClipThreshold = panel.Q<Slider>("minClipThreshold");
+            var maxClipThreshold = panel.Q<Slider>("maxClipThreshold");
+
+            panel.visible = volumeSettings.IsActive;
 
             alpha.value = volumeSettings.Alpha.ToString("F16");
             alpha.RegisterValueChangedCallback(evt =>
@@ -55,6 +58,17 @@ namespace Render.Ui
             {
                 volumeSettings.ClipMaximumThreashold = evt.newValue;
             });
+            
+            // TODO Remove
+            uiDocument.rootVisualElement.Q<Button>("refreshAll").clicked += () =>
+            {
+                panel.visible = volumeSettings.IsActive;
+                alpha.value = volumeSettings.Alpha.ToString("F16");
+                alphaThreshold.value = volumeSettings.AlphaThreshold.ToString("F16");
+                stepDistance.value = volumeSettings.StepDistance.ToString("F16");
+                minClipThreshold.value = volumeSettings.ClipMinimumThreashold;
+                maxClipThreshold.value = volumeSettings.ClipMaximumThreashold;
+            };
         }
     }
 }

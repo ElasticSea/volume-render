@@ -35,7 +35,7 @@ namespace Volumes.Imports
             // Volume is too large to fit into Texture3D
             if (needToCrop)
             {
-                originalVolume = originalVolume.Crop(targetBounds, multithreaded);
+                originalVolume = originalVolume.Crop(targetBounds, false);
             }
 
             var (normalized, min, max) = originalVolume.Data.Normalize(multithreaded);
@@ -65,7 +65,7 @@ namespace Volumes.Imports
             {
                 // 2146435071 is maximum index of non byte array
                 var maxVolume = (long) ((double) textureSizeLimit / bytesPerPixel);
-                var offset = CalculateOffset(bounds.Width, bounds.Height, bounds.Depth, maxVolume);
+                var offset = CalculateOffset(bounds.Width, bounds.Height, bounds.Depth, maxVolume) + 50;
                 bounds.X += offset;
                 bounds.Y += offset;
                 bounds.Z += offset;

@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using ElasticSea.Framework.Util;
 using UnityEngine;
 
 namespace Volumes
@@ -22,16 +24,6 @@ namespace Volumes
             Max = max;
             ChannelDepthBits = channelDepthBits;
             Data = data;
-        }
-
-        public void Save(string path)
-        {
-            VolumeManager.Save(this, path);
-        }
-
-        public static Volume Load(string path)
-        {
-            return VolumeManager.Load(path);
         }
 
         public Texture3D ToTexture()

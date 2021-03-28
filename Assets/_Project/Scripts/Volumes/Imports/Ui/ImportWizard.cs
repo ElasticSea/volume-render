@@ -1,4 +1,5 @@
 using System.IO;
+using ElasticSea.Framework.Util;
 using UnityEngine;
 
 namespace Volumes.Imports.Ui
@@ -34,14 +35,18 @@ namespace Volumes.Imports.Ui
             set => multithreaded = value;
         }
 
-        public string VolumePath => Path.Combine(new DirectoryInfo(sourcePath).Parent.FullName, $"{volumeName}.vlm");
-
-
         public void Import()
         {
             var nftiImport = new NiftiImport(sourcePath, multithreaded);
             var volume = ImportManager.Import(nftiImport, channelDepth, multithreaded);
-            volume.Save(VolumePath);
+            
+            var dir = VolumeManager.VolumeDirectoryPath;
+            Utils.EnsureDirectory(dir);
+            var path = Path.Combine(dir, $"{volumeName}.vlm");
+            VolumeManager.SaveVolume(volume, path);
+            
+            //TODO ? better api
+            //volume.Save(volumeName);
         }
 
         public RawVolumeMetadata GetHeader()
