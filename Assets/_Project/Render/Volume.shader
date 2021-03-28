@@ -6,6 +6,7 @@ Shader "Volume"
         _Alpha ("Alpha", float) = 0.01
         _AlphaThreshold ("Alpha Threshold", float) = 0.95
         _StepDistance ("Step Distance", float) = 0.01
+        _MaxStepThreshold ("Max Step Threshold", int) = 512
         _ClipMin ("Clip Minimum Threashold", Range (0, 1)) = 0
         _ClipMax ("Clip Maximum Threashold", Range (0, 1)) = 1
         _CutNormal ("Cut Normal", Vector) = (0,1,0)
@@ -42,6 +43,7 @@ Shader "Volume"
             
             uniform sampler3D _Volume;
             uniform float _StepDistance;
+            uniform int _MaxStepThreshold;
             uniform float _ClipMin;
             uniform float _ClipMax;
             uniform float _Alpha;
@@ -113,6 +115,8 @@ Shader "Volume"
                 entryPoint = ClampRayToPlane(exitPoint, entryPoint, _CutOrigin, _CutNormal);
                 dstToBox = length(entryPoint - rayOrigin);
                 dstInsideBox = length(exitPoint - entryPoint);
+                
+                dstInsideBox = min(_StepDistance * _MaxStepThreshold, dstInsideBox);
                 
                 float dstTravelled = 0.0;
                 float4 color = 0;

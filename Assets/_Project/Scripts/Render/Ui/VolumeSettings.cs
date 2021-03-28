@@ -39,5 +39,11 @@ namespace Render.Ui
             get => material?.GetFloat("_ClipMax") ?? -1;
             set => material?.SetFloat("_ClipMax", Mathf.Clamp01(value));
         }
+
+        public int MaxStepThreshold
+        {
+            get => material?.GetInt("_MaxStepThreshold") ?? -1;
+            set => material?.SetInt("_MaxStepThreshold", value);
+        }
     }
 }

@@ -29,8 +29,10 @@ namespace Render
         
             volumeRender = Instantiate(volumePrefab);
             volumeRender.Material.SetTexture("_Volume", texture);
-            volumeRender.Material.SetFloat("_Alpha", 0.03f);
-            volumeRender.Material.SetFloat("_StepDistance", 0.0001f);
+            volumeRender.Material.SetFloat("_Alpha", 0.1f);
+            volumeRender.Material.SetFloat("_AlphaThreshold", 0.99f);
+            volumeRender.Material.SetFloat("_StepDistance", 0.0002f);
+            volumeRender.Material.SetInt("_MaxStepThreshold", 2048);
 
             volumeRender.transform.position = new Vector3(-1.942f, 2.365f, 0.695f);
 
