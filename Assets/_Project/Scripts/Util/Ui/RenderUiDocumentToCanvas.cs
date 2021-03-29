@@ -8,7 +8,7 @@ namespace Util.Ui
     {
         [SerializeField] private UIDocument uiDocument;
     
-        private void Awake()
+        private void Start()
         {
             var rt = new RenderTexture(Screen.width, Screen.height, 32);
             var canvas = new GameObject().AddComponent<Canvas>();
