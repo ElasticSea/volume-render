@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics;
-using Render.Ui;
 using UnityEngine;
 using Volumes;
 
@@ -8,7 +6,6 @@ namespace Render
 {
     public class VolumeRenderManager : MonoBehaviour
     {
-        [SerializeField] private GameObject hand;
         [SerializeField] private VolumeRender volumePrefab;
         
         private VolumeRender volumeRender;
