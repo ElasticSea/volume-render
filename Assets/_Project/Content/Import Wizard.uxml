@@ -16,6 +16,10 @@
             </ui:VisualElement>
             <ui:VisualElement name="renderPanel" style="background-color: rgb(210, 210, 210); padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px;">
                 <ui:Label text="Render" display-tooltip-when-elided="true" style="font-size: 18px;" />
+                <ui:VisualElement style="flex-direction: row; justify-content: flex-start; height: 25px;">
+                    <ui:Label text="Render Presets" display-tooltip-when-elided="true" style="width: 150px; margin-left: 3px; margin-right: 3px; margin-top: 1px; margin-bottom: 1px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                    <ui:VisualElement name="container" style="flex-direction: row;" />
+                </ui:VisualElement>
                 <ui:TextField picking-mode="Ignore" label="Size" value="1" name="size" />
                 <ui:TextField name="alpha" picking-mode="Ignore" label="Alpha" value="filler text" text="filler text" />
                 <ui:TextField name="alphaThreshold" picking-mode="Ignore" label="Alpha Threshold" value="filler text" text="filler text" />

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Render.Ui
@@ -57,6 +58,43 @@ namespace Render.Ui
         {
             get => material?.GetInt("_MaxStepThreshold") ?? -1;
             set => material?.SetInt("_MaxStepThreshold", value);
+        }
+
+
+        private IEnumerable<RenderPreset> renderPresets = new[]
+        {
+            new RenderPreset
+            {
+                Name = "Low",
+                Settings = new RenderSettings
+                {
+                    Alpha = 0.77f,
+                    AlphaThreshold = 0.99f,
+                    StepDistance = 0.0016f,
+                    MaxStepThreshold = 256
+                }
+            },
+            new RenderPreset
+            {
+                Name = "Ultra",
+                Settings = new RenderSettings
+                {
+                    Alpha = 0.1f,
+                    AlphaThreshold = 0.999f,
+                    StepDistance = 0.0002f,
+                    MaxStepThreshold = 2048
+                }
+            }
+        };
+
+        public IEnumerable<RenderPreset> RenderPresets => renderPresets;
+
+        public void ApplyPreset(RenderPreset present)
+        {
+            material?.SetFloat("_Alpha", present.Settings.Alpha);
+            material?.SetFloat("_AlphaThreshold", present.Settings.AlphaThreshold);
+            material?.SetFloat("_StepDistance", present.Settings.StepDistance);
+            material?.SetInt("_MaxStepThreshold", present.Settings.MaxStepThreshold);
         }
     }
 }

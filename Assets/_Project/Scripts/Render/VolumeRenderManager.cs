@@ -25,7 +25,7 @@ namespace Render
             volumeRender = Instantiate(volumePrefab);
             volumeRender.Material.SetTexture("_Volume", volume.Texture);
             volumeRender.Material.SetFloat("_Alpha", 0.1f);
-            volumeRender.Material.SetFloat("_AlphaThreshold", 1f);
+            volumeRender.Material.SetFloat("_AlphaThreshold", 0.999f);
             volumeRender.Material.SetFloat("_StepDistance", 0.0002f);
             volumeRender.Material.SetInt("_MaxStepThreshold", 2048);
             OnVolumeLoaded(volumeRender);

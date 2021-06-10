@@ -1,5 +1,8 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Util.Ui;
+using Volumes;
 
 namespace Render.Ui
 {
@@ -12,6 +15,7 @@ namespace Render.Ui
         {
             var root = uiDocument.rootVisualElement;
             var panel = root.Q<VisualElement>("renderPanel");
+            var container = panel.Q<VisualElement>("container");
             var alpha = panel.Q<TextField>("alpha");
             var size = panel.Q<TextField>("size");
             var alphaThreshold = panel.Q<TextField>("alphaThreshold");
@@ -21,6 +25,24 @@ namespace Render.Ui
             var maxStepThreshold = panel.Q<TextField>("maxStepThreshold");
 
             panel.visible = volumeSettings.IsActive;
+
+            void RefreshAll()
+            {
+                panel.visible = volumeSettings.IsActive;
+                size.value = volumeSettings.Size.ToString("F16");
+                alpha.value = volumeSettings.Alpha.ToString("F16");
+                alphaThreshold.value = volumeSettings.AlphaThreshold.ToString("F16");
+                stepDistance.value = volumeSettings.StepDistance.ToString("F16");
+                minClipThreshold.value = volumeSettings.ClipMinimumThreashold;
+                maxClipThreshold.value = volumeSettings.ClipMaximumThreashold;
+                maxStepThreshold.value = volumeSettings.MaxStepThreshold.ToString("N");
+            }
+
+            UiUtils.EnumField(volumeSettings.RenderPresets, container, present =>
+            {
+                volumeSettings.ApplyPreset(present);
+                RefreshAll();
+            });
 
             size.value = volumeSettings.Size.ToString("F16");
             size.RegisterValueChangedCallback(evt =>
@@ -83,14 +105,7 @@ namespace Render.Ui
             // TODO Remove
             uiDocument.rootVisualElement.Q<Button>("refreshAll").clicked += () =>
             {
-                panel.visible = volumeSettings.IsActive;
-                size.value = volumeSettings.Size.ToString("F16");
-                alpha.value = volumeSettings.Alpha.ToString("F16");
-                alphaThreshold.value = volumeSettings.AlphaThreshold.ToString("F16");
-                stepDistance.value = volumeSettings.StepDistance.ToString("F16");
-                minClipThreshold.value = volumeSettings.ClipMinimumThreashold;
-                maxClipThreshold.value = volumeSettings.ClipMaximumThreashold;
-                maxStepThreshold.value = volumeSettings.MaxStepThreshold.ToString("N");
+                RefreshAll();
             };
         }
     }
