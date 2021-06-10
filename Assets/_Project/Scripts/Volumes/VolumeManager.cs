@@ -37,11 +37,10 @@ namespace Volumes
             return new Volume(width, height, depth, min, max, bits, null);
         }
         
-        public static Volume LoadVolume(string path)
+        public static RuntimeVolume LoadRuntimeVolume(Stream stream)
         {
-            using var reader = File.OpenRead(path);
             var dimensionsBuffer = new byte[24];
-            reader.Read(dimensionsBuffer, 0, dimensionsBuffer.Length);
+            stream.Read(dimensionsBuffer, 0, dimensionsBuffer.Length);
             var width = BitConverter.ToInt32(dimensionsBuffer, 0);
             var height = BitConverter.ToInt32(dimensionsBuffer, 4);
             var depth = BitConverter.ToInt32(dimensionsBuffer, 8);
@@ -49,24 +48,56 @@ namespace Volumes
             var max = BitConverter.ToSingle(dimensionsBuffer, 16);
             var bits = BitConverter.ToInt32(dimensionsBuffer, 20);
 
-            var dataArray = new BigArray<byte>((long) width * height * depth * bits/8);
-
-            if (bits % 8 != 0)
+            TextureFormat format;
+            switch (bits)
             {
-                throw new InvalidOperationException("Does not support partial bytes.");
-            }
-
-            for (var i = 0; i < dataArray.Data.Length; i++)
-            {
-                var chunk = dataArray.Data[i];
-                var read = reader.Read(chunk, 0, chunk.Length);
-                if (read == 0)
-                {
+                case 8: 
+                    format = TextureFormat.R8;
                     break;
-                }
+                case 16:
+                    format = TextureFormat.R16;
+                    break;
+                case 32:
+                    format = TextureFormat.RFloat;
+                    break;
+                default:
+                    throw new ArgumentException("Does not support partial bytes.");
             }
+
+            var texture = new Texture3D(width, height, depth, format, false);
+            texture.filterMode = FilterMode.Bilinear;
+            SetPixelData(texture, stream);
+            Debug.Log(GC.GetTotalMemory(true));
+            
+            // Attempt to force the GC release LOH memory and return the memory to OS
+            // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
+            for (var i = 0; i < 32; i++)
+            {
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+            }
+
+            texture.Apply(false, true);
                 
-            return new Volume(width, height, depth, min, max, bits, dataArray);
+            Debug.Log(GC.GetTotalMemory(true));
+            return new RuntimeVolume(width, height, depth, min, max, bits, texture);
+        }
+
+        private static void SetPixelData(Texture3D texture3D, Stream stream)
+        {
+            var bytelen = stream.Length - stream.Position;
+            var bytes = new byte[bytelen];
+            
+            int read;
+            int index = 0;
+            var buffer = new byte[1024 * 1024];
+            while ((read = stream.Read(buffer, 0, buffer.Length)) != 0)
+            {
+                Array.Copy(buffer, 0, bytes, index, read);
+                index += read;
+            }
+            
+            // There is not destination index on the texture so I have allocate byte[]
+            texture3D.SetPixelData(bytes, 0);
         }
         
         public static void SaveVolume(Volume volume, string path)

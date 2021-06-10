@@ -18,5 +18,16 @@ namespace Volumes
             Height = height;
             Depth = depth;
         }
+
+        public VolumeBounds Offset(int offset)
+        {
+            X += offset;
+            Y += offset;
+            Z += offset;
+            Width -= offset * 2;
+            Height -= offset * 2;
+            Depth -= offset * 2;
+            return this;
+        }
     }
 }

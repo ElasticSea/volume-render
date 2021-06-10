@@ -13,6 +13,7 @@ namespace Render.Ui
             var root = uiDocument.rootVisualElement;
             var panel = root.Q<VisualElement>("renderPanel");
             var alpha = panel.Q<TextField>("alpha");
+            var size = panel.Q<TextField>("size");
             var alphaThreshold = panel.Q<TextField>("alphaThreshold");
             var stepDistance = panel.Q<TextField>("stepDistance");
             var minClipThreshold = panel.Q<Slider>("minClipThreshold");
@@ -20,6 +21,15 @@ namespace Render.Ui
             var maxStepThreshold = panel.Q<TextField>("maxStepThreshold");
 
             panel.visible = volumeSettings.IsActive;
+
+            size.value = volumeSettings.Size.ToString("F16");
+            size.RegisterValueChangedCallback(evt =>
+            {
+                if (float.TryParse(evt.newValue, out var val))
+                {
+                    volumeSettings.Size = val;
+                }
+            });
 
             alpha.value = volumeSettings.Alpha.ToString("F16");
             alpha.RegisterValueChangedCallback(evt =>
@@ -74,6 +84,7 @@ namespace Render.Ui
             uiDocument.rootVisualElement.Q<Button>("refreshAll").clicked += () =>
             {
                 panel.visible = volumeSettings.IsActive;
+                size.value = volumeSettings.Size.ToString("F16");
                 alpha.value = volumeSettings.Alpha.ToString("F16");
                 alphaThreshold.value = volumeSettings.AlphaThreshold.ToString("F16");
                 stepDistance.value = volumeSettings.StepDistance.ToString("F16");

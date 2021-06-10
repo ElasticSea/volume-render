@@ -1,11 +1,8 @@
-using System;
-using System.IO;
-using ElasticSea.Framework.Util;
 using UnityEngine;
 
 namespace Volumes
 {
-    public class Volume
+    public class RuntimeVolume
     {
         public int Width { get; }
         public int Height { get; }
@@ -13,9 +10,9 @@ namespace Volumes
         public float Min { get; }
         public float Max { get; }
         public int ChannelDepthBits { get; }
-        public BigArray<byte> Data { get; }
+        public Texture3D Texture { get; }
 
-        public Volume(int width, int height, int depth, float min, float max, int channelDepthBits, BigArray<byte> data)
+        public RuntimeVolume(int width, int height, int depth, float min, float max, int channelDepthBits, Texture3D texture)
         {
             Width = width;
             Height = height;
@@ -23,7 +20,7 @@ namespace Volumes
             Min = min;
             Max = max;
             ChannelDepthBits = channelDepthBits;
-            Data = data;
+            Texture = texture;
         }
     }
 }

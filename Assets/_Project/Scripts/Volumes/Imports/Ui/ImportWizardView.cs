@@ -22,7 +22,9 @@ namespace Volumes.Imports.Ui
             var name = root.Q<TextField>("name");
             var source = root.Q<TextField>("source");
             var multithreaded = root.Q<Toggle>("multithreaded");
+            var offset = root.Q<TextField>("offset");
             var infoBox = root.Q<HelpBox>("info");
+            
             infoBox.visible = false;
 
             EnumField(Utils.GetEnumValues<ChannelDepth>(), importWizard.Depth, container, depth =>
@@ -73,6 +75,19 @@ namespace Volumes.Imports.Ui
                     TriggerChange();
                 });
             });
+
+            offset.value = importWizard.Offset.ToString("N");
+            offset.RegisterValueChangedCallback(evt =>
+            {
+                HandleErrors(() =>
+                {
+                    if (int.TryParse(evt.newValue, out var val))
+                    {
+                        importWizard.Offset = val;
+                        TriggerChange();
+                    }
+                });
+            });
         }
 
         private void HandleErrors(Action action)
@@ -90,22 +105,19 @@ namespace Volumes.Imports.Ui
 
         private void TriggerChange()
         {
-            var header = importWizard.GetHeader();
-            var bounds = importWizard.GetValidBounds();
-
-            var needToCrop = header.Width != bounds.Width || header.Height != bounds.Height || header.Depth != bounds.Depth;
+            var needToCrop = importWizard.IsAutomaticCrop;
+            var result = importWizard.Bounds;
             if (needToCrop)
             {
-                var warning = $"Volume is too large. Volume has to be under 2048x2048x2048 voxels and 2GB\n" +
-                              $"Loaded volume with resolution {header.Width}x{header.Height}x{header.Depth} at " +
-                              $"{importWizard.Depth.GetBitsSize()/8}B per voxel at {importWizard.OriginalVolumeSize()}B will " +
-                              $"be cropped to {bounds.Width}x{bounds.Height}x{bounds.Depth} at {importWizard.ResultVolumeSize()}B";
+                var warning =
+                    $"Volume is too large and will be automatically cropped. Volume has to be under 2048x2048x2048 voxels and 2GB\n"+
+                    $"Resulting volume is {result.Width}x{result.Height}x{result.Depth} and {importWizard.VolumeSize(result)}B";
             
                 ShowMessage(warning, HelpBoxMessageType.Warning);
             }
             else
             {
-                ShowMessage($"Resulting volume is {bounds.Width}x{bounds.Height}x{bounds.Depth} and {importWizard.ResultVolumeSize()}B", HelpBoxMessageType.Info);
+                ShowMessage($"Resulting volume is {result.Width}x{result.Height}x{result.Depth} and {importWizard.VolumeSize(result)}B", HelpBoxMessageType.Info);
             }
         }
 

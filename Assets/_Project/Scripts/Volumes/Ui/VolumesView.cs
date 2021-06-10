@@ -1,4 +1,5 @@
 using System.Linq;
+using ElasticSea.Framework.Extensions;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,7 +20,7 @@ namespace Volumes.Ui
             {
                 var volumeSource = (listView.itemsSource[i] as VolumeSource);
                 var volume = volumeSource.Volume;
-                var text = $"{volume.Width}x{volume.Height}x{volume.Depth}:{volume.ChannelDepthBits}Bit\n{volumeSource.FilePath}";
+                var text = $"{volume.Width}x{volume.Height}x{volume.Depth}:{volume.ChannelDepthBits}Bit\n{new string(volumeSource.FilePath.TakeLast(32).ToArray())}";
                 (e as Label).text = text;
             };
             listView.itemsSource = volumesViewModel.Volumes.ToList();

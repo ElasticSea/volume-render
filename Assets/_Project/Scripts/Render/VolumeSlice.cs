@@ -1,9 +1,11 @@
+using System;
 using UnityEngine;
 
 namespace Render
 {
     public class VolumeSlice : MonoBehaviour
     {
+        [SerializeField] private VolumeRenderManager vrm;
         [SerializeField] private VolumeRender volumeRender;
 
         public VolumeRender VolumeRender
@@ -12,7 +14,16 @@ namespace Render
             set => volumeRender = value;
         }
 
-        void Update()
+        private void Awake()
+        {
+            vrm.OnVolumeLoaded += render =>
+            {
+                VolumeRender = render;
+                render.transform.position = new Vector3(-1.942f, 2.365f, 0.695f);
+            };
+        }
+
+        private void Update()
         {
             if (volumeRender)
             {

@@ -10,6 +10,19 @@ namespace Render.Ui
 
         public bool IsActive => material != null;
         
+        public float Size
+        {
+            get => volumeRenderManager?.VolumeRender?.transform?.localScale.x ?? -1;
+            set
+            {
+                var volumeRenderTransform = volumeRenderManager?.VolumeRender?.transform;
+                if (volumeRenderTransform)
+                {
+                    volumeRenderTransform.localScale = new Vector3(value, value, value);
+                }
+            }
+        }
+
         public float Alpha
         {
             get => material?.GetFloat("_Alpha") ?? -1;

@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <ui:VisualElement picking-mode="Ignore" style="width: 100%; height: 100%; flex-direction: row-reverse; opacity: 1;">
-        <ui:VisualElement picking-mode="Ignore" style="width: 400px;">
+        <ui:VisualElement picking-mode="Ignore" name="all" style="width: 400px;">
             <ui:VisualElement name="importPanel" style="width: 400px; background-color: rgb(210, 210, 210); padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px;">
                 <ui:Label text="Import" display-tooltip-when-elided="true" style="font-size: 18px;" />
                 <ui:TextField picking-mode="Ignore" label="Volume Source" name="source" />
@@ -10,11 +10,13 @@
                     <ui:VisualElement name="container" style="flex-direction: row;" />
                 </ui:VisualElement>
                 <ui:Toggle label="Multithreaded" name="multithreaded" />
+                <ui:TextField picking-mode="Ignore" label="Offset" text="0" name="offset" />
                 <ui:Button text="Import" display-tooltip-when-elided="true" name="import" />
                 <ui:HelpBox message-type="Error" text="Test" name="info" value="true" />
             </ui:VisualElement>
             <ui:VisualElement name="renderPanel" style="background-color: rgb(210, 210, 210); padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px;">
                 <ui:Label text="Render" display-tooltip-when-elided="true" style="font-size: 18px;" />
+                <ui:TextField picking-mode="Ignore" label="Size" value="1" name="size" />
                 <ui:TextField name="alpha" picking-mode="Ignore" label="Alpha" value="filler text" text="filler text" />
                 <ui:TextField name="alphaThreshold" picking-mode="Ignore" label="Alpha Threshold" value="filler text" text="filler text" />
                 <ui:TextField name="stepDistance" picking-mode="Ignore" label="Step Distance" value="filler text" text="filler text" />
@@ -27,7 +29,13 @@
                 <ui:ListView focusable="true" name="volumes" style="flex-grow: 1;" />
                 <ui:Button display-tooltip-when-elided="true" name="loadVolume" text="Load" />
             </ui:VisualElement>
+            <ui:VisualElement style="flex-direction: row; flex-grow: 0;">
+                <ui:Button display-tooltip-when-elided="true" text="Download" name="download" style="min-width: 50px;" />
+                <ui:Label picking-mode="Ignore" text="url" name="downloadProgress" style="flex-grow: 0;" />
+                <ui:TextField picking-mode="Ignore" label="Download" value="url" text="url" name="downloadUrl" style="flex-grow: 0;" />
+            </ui:VisualElement>
             <ui:Button text="Refresh State" display-tooltip-when-elided="true" name="refreshAll" />
         </ui:VisualElement>
     </ui:VisualElement>
+    <ui:Button text="Hide/Show" display-tooltip-when-elided="true" name="hideShow" style="position: absolute; right: 0; top: 0; width: 50px; height: 25px;" />
 </ui:UXML>
