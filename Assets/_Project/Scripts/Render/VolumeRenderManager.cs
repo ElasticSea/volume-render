@@ -8,12 +8,12 @@ namespace Render
     public class VolumeRenderManager : MonoBehaviour
     {
         [SerializeField] private VolumeRender volumePrefab;
-        
+
         private VolumeRender volumeRender;
 
         public VolumeRender VolumeRender => volumeRender;
 
-        public event Action<VolumeRender> OnVolumeLoaded = render => { }; 
+        public event Action<VolumeRender> OnVolumeLoaded = render => { };
 
         public void LoadVolume(RuntimeVolume volume)
         {
@@ -22,13 +22,10 @@ namespace Render
                 Destroy(volumeRender.Material.GetTexture("_Volume"));
                 Destroy(volumeRender.gameObject);
             }
-        
+
             volumeRender = Instantiate(volumePrefab);
             volumeRender.Material.SetTexture("_Volume", volume.Texture);
-            volumeRender.Material.SetFloat("_Alpha", 0.1f);
-            volumeRender.Material.SetFloat("_AlphaThreshold", 0.999f);
-            volumeRender.Material.SetFloat("_StepDistance", 0.0002f);
-            volumeRender.Material.SetInt("_MaxStepThreshold", 2048);
+            ApplyPreset(High);
             OnVolumeLoaded(volumeRender);
         }
 
@@ -43,43 +40,44 @@ namespace Render
                 volumeRender.Material.SetVector("_CutNormal", localPosition);
             }
         }
-        
-        private IEnumerable<RenderPreset> renderPresets = new[]
+
+        private static readonly RenderPreset Low = new RenderPreset
         {
-            new RenderPreset
+            Name = "Low",
+            Settings = new RenderSettings
             {
-                Name = "Low",
-                Settings = new RenderSettings
-                {
-                    Alpha = 5f,
-                    AlphaThreshold = 0.95f,
-                    StepDistance = 0.0128f,
-                    MaxStepThreshold = 32
-                }
-            },
-            new RenderPreset
-            {
-                Name = "Medium",
-                Settings = new RenderSettings
-                {
-                    Alpha = 0.77f,
-                    AlphaThreshold = 0.99f,
-                    StepDistance = 0.0016f,
-                    MaxStepThreshold = 256
-                }
-            },
-            new RenderPreset
-            {
-                Name = "Ultra",
-                Settings = new RenderSettings
-                {
-                    Alpha = 0.1f,
-                    AlphaThreshold = 0.999f,
-                    StepDistance = 0.0002f,
-                    MaxStepThreshold = 2048
-                }
+                Alpha = 5f,
+                AlphaThreshold = 0.95f,
+                StepDistance = 0.0128f,
+                MaxStepThreshold = 64
             }
         };
+
+        private static readonly RenderPreset High = new RenderPreset
+        {
+            Name = "High",
+            Settings = new RenderSettings
+            {
+                Alpha = 0.77f,
+                AlphaThreshold = 0.99f,
+                StepDistance = 0.0016f,
+                MaxStepThreshold = 512
+            }
+        };
+
+        private static readonly RenderPreset Ultra = new RenderPreset
+        {
+            Name = "Ultra",
+            Settings = new RenderSettings
+            {
+                Alpha = 0.1f,
+                AlphaThreshold = 0.999f,
+                StepDistance = 0.0002f,
+                MaxStepThreshold = 4096
+            }
+        };
+
+        private IEnumerable<RenderPreset> renderPresets = new[] {Low, High, Ultra};
 
         public IEnumerable<RenderPreset> RenderPresets => renderPresets;
 
