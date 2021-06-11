@@ -38,9 +38,9 @@ namespace Volumes.Imports
 
             var packed = normalized.Pack(channelDepth, multithreaded);
 
-            var w = targetBounds.Width;
-            var h = targetBounds.Height;
-            var d = targetBounds.Depth;
+            var w = originalVolume.Width;
+            var h = originalVolume.Height;
+            var d = originalVolume.Depth;
             var bits = channelDepth.GetBitsSize();
             
             return new Volume(w, h, d, min, max, bits, packed);
