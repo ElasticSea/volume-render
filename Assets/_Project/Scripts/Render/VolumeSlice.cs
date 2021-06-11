@@ -29,9 +29,8 @@ namespace Render
             {
                 var volTransform = volumeRender.transform;
                 var volMat = volumeRender.Material;
-                
-                volMat.SetVector("_CutNormal", volTransform.InverseTransformVector(transform.up));
-                volMat.SetVector("_CutOrigin", volTransform.InverseTransformPoint(transform.position));
+
+                vrm.Cut(transform.position, transform.up);
             }
         }
     }

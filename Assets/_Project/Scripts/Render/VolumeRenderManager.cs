@@ -30,5 +30,14 @@ namespace Render
             volumeRender.Material.SetInt("_MaxStepThreshold", 2048);
             OnVolumeLoaded(volumeRender);
         }
+
+        public void Cut(Vector3 position, Vector3 normal)
+        {
+            var localPos = volumeRender.transform.InverseTransformPoint(position);
+            var localPosition = volumeRender.transform.InverseTransformVector(normal);
+            
+            volumeRender.Material.SetVector("_CutOrigin", localPos);
+            volumeRender.Material.SetVector("_CutNormal", localPosition);
+        }
     }
 }
