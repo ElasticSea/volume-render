@@ -33,11 +33,14 @@ namespace Render
 
         public void Cut(Vector3 position, Vector3 normal)
         {
-            var localPos = volumeRender.transform.InverseTransformPoint(position);
-            var localPosition = volumeRender.transform.InverseTransformVector(normal);
-            
-            volumeRender.Material.SetVector("_CutOrigin", localPos);
-            volumeRender.Material.SetVector("_CutNormal", localPosition);
+            if (volumeRender)
+            {
+                var localPos = volumeRender.transform.InverseTransformPoint(position);
+                var localPosition = volumeRender.transform.InverseTransformVector(normal);
+
+                volumeRender.Material.SetVector("_CutOrigin", localPos);
+                volumeRender.Material.SetVector("_CutNormal", localPosition);
+            }
         }
     }
 }

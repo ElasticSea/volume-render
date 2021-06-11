@@ -68,6 +68,17 @@ namespace Render.Ui
                 Name = "Low",
                 Settings = new RenderSettings
                 {
+                    Alpha = 5f,
+                    AlphaThreshold = 0.95f,
+                    StepDistance = 0.0128f,
+                    MaxStepThreshold = 32
+                }
+            },
+            new RenderPreset
+            {
+                Name = "Medium",
+                Settings = new RenderSettings
+                {
                     Alpha = 0.77f,
                     AlphaThreshold = 0.99f,
                     StepDistance = 0.0016f,
