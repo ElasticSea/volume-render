@@ -16,6 +16,7 @@ Shader "Volume"
     {
         Blend One OneMinusSrcAlpha
         ZWrite Off
+        Cull Front
         Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
         Pass
         {
