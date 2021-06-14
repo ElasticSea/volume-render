@@ -13,9 +13,9 @@ namespace Volumes
         public float Min { get; }
         public float Max { get; }
         public int ChannelDepthBits { get; }
-        public BigArray<byte> Data { get; }
+        public VolumeCluster[,,] Clusters { get; }
 
-        public Volume(int width, int height, int depth, float min, float max, int channelDepthBits, BigArray<byte> data)
+        public Volume(int width, int height, int depth, float min, float max, int channelDepthBits, VolumeCluster[,,] clusters)
         {
             Width = width;
             Height = height;
@@ -23,7 +23,7 @@ namespace Volumes
             Min = min;
             Max = max;
             ChannelDepthBits = channelDepthBits;
-            Data = data;
+            Clusters = clusters;
         }
     }
 }

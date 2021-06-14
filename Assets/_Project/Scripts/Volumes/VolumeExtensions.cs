@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -130,7 +131,7 @@ namespace Volumes
 
         private static (BigArray<float> volume, float min, float max) NormalizeMt(this BigArray<float> data)
         {
-            var chunkSize = 1024 * 1024;
+            var chunkSize = data.Length / Environment.ProcessorCount;
 
             var jobs = Enumerable
                 .Range(0, (int) (Math.Ceiling((float)data.Length / chunkSize)))
@@ -229,7 +230,7 @@ namespace Volumes
 
         private static BigArray<byte> PackMt(this BigArray<float> data, ChannelDepth channelDepth)
         {
-            var chunkSize = 1024 * 1024;
+            var chunkSize = data.Length / Environment.ProcessorCount;
 
             var jobs = Enumerable
                 .Range(0, (int) (Math.Ceiling((float)data.Length / chunkSize)))
@@ -256,6 +257,172 @@ namespace Volumes
             });
             
             return newData;
+        }
+
+        public static UnpackedVolumeCluster<T>[,,] ToClusters<T>(this BigArray<T> data, int width, int height, int depth, int maxClusterSize, bool padding, bool multithreaded = true)
+        {
+            if (multithreaded)
+            {
+                return data.ToClustersMt(width, height, depth, maxClusterSize, padding);
+            }
+            else
+            {
+                return data.ToClustersSt(width, height, depth, maxClusterSize, padding);
+            }
+        }
+        
+        public static VolumeCluster[,,] PackClusters(this UnpackedVolumeCluster<float>[,,] clusters, ChannelDepth channelDepth, bool multithreaded)
+        {
+            var width = clusters.GetLength(0);
+            var height = clusters.GetLength(1);
+            var depth = clusters.GetLength(2);
+
+            var packed = new VolumeCluster[width,height,depth];
+            for (var x = 0; x < width; x++)
+            {
+                for (var y = 0; y < height; y++)
+                {
+                    for (var z = 0; z <depth; z++)
+                    {
+                        var c = clusters[x, y, z];
+                        packed[x,y,z] = new VolumeCluster
+                        {
+                            Width = c.Width,
+                            Height = c.Height,
+                            Depth = c.Depth,
+                            X = c.X,
+                            Y = c.Y,
+                            Z = c.Z,
+                            Data = c.Data.Pack(channelDepth, multithreaded)
+                        };
+                    }
+                }
+            }
+
+            return packed;
+        }
+        
+        private static UnpackedVolumeCluster<T>[,,] ToClustersMt<T>(this BigArray<T> data, int width, int height, int depth, int maxClusterSize, bool padding)
+        {
+            var clusters = InitClusters<T>(width, height, depth, maxClusterSize, padding);
+            
+            var chunkSize = data.Length / Environment.ProcessorCount;
+            var jobs = new List<(long min, long max)>();
+
+            for (var i = 0L; i < data.Length; i += chunkSize)
+            {
+                var min = i;
+                var max = (long) Mathf.Min(data.Length, i + chunkSize);
+                jobs.Add((min, max));
+            }
+            
+            Parallel.ForEach(jobs, (tuple, state) =>
+            {
+                var ( min, max) = tuple;
+
+                for (var i = min; i < max; i++)
+                {
+                    var rest = i;
+                    var widthHeight = width * height;
+                    var z = rest / widthHeight;
+                    rest -= z * widthHeight;
+                    var y =  rest /  width;
+                    rest -= y * width;
+                    var x = rest;
+
+                    var cx = x / maxClusterSize;
+                    var cy = y / maxClusterSize;
+                    var cz = z / maxClusterSize;
+
+                    var cluster = clusters[cx, cy, cz];
+
+
+                    var ccx = x - (cx * maxClusterSize);
+                    var ccy = y - (cy * maxClusterSize);
+                    var ccz = z - (cz * maxClusterSize);
+
+                    var clusterIndex = ccx + ccy * cluster.Width + ccz * cluster.Width * cluster.Height;
+
+                    cluster.Data[clusterIndex] = data[i];
+                }
+            });
+
+            return clusters;
+        }
+
+        private static UnpackedVolumeCluster<T>[,,] InitClusters<T>(int width, int height, int depth, int maxClusterSize, bool padding)
+        {
+            var clustersX = Mathf.CeilToInt((float) width / maxClusterSize);
+            var clustersY = Mathf.CeilToInt((float) height / maxClusterSize);
+            var clustersZ = Mathf.CeilToInt((float) depth / maxClusterSize);
+            var clusters = new UnpackedVolumeCluster<T>[clustersX, clustersY, clustersZ];
+            for (var z = 0; z < clustersZ; z++)
+            {
+                for (var y = 0; y < clustersY; y++)
+                {
+                    for (var x = 0; x < clustersX; x++)
+                    {
+                        var chunkX = x ;
+                        var chunkY = y;
+                        var chunkZ = z;
+                        var chunkWidth = maxClusterSize;
+                        var chunkHeight = maxClusterSize;
+                        var chunkDepth = maxClusterSize;
+                        if (padding == false)
+                        {
+                            chunkWidth = Mathf.Min(width - chunkX * maxClusterSize, maxClusterSize);
+                            chunkHeight = Mathf.Min(height - chunkY * maxClusterSize, maxClusterSize);
+                            chunkDepth = Mathf.Min(depth - chunkZ * maxClusterSize, maxClusterSize);
+                        }
+                        
+                        clusters[x, y, z] = new UnpackedVolumeCluster<T>
+                        {
+                            X = chunkX,
+                            Y = chunkY,
+                            Z = chunkZ,
+                            Width = chunkWidth,
+                            Height = chunkHeight,
+                            Depth = chunkDepth,
+                            Data = new BigArray<T>(chunkWidth * chunkHeight * chunkDepth)
+                        };
+                    }
+                }
+            }
+
+            return clusters;
+        }
+        
+        private static UnpackedVolumeCluster<T>[,,] ToClustersSt<T>(this BigArray<T> data, int width, int height, int depth, int maxClusterSize, bool padding)
+        {
+            var clusters = InitClusters<T>(width, height, depth, maxClusterSize, padding);
+            
+            for (long i = 0; i < data.Length; i++)
+            {
+                var rest = i;
+                var widthHeight = width * height;
+                var z = rest / widthHeight;
+                rest -= z * widthHeight;
+                var y =  rest /  width;
+                rest -= y * width;
+                var x = rest;
+
+                var cx = x / maxClusterSize;
+                var cy = y / maxClusterSize;
+                var cz = z / maxClusterSize;
+
+                var cluster = clusters[cx, cy, cz];
+
+
+                var ccx = x - (cx * maxClusterSize);
+                var ccy = y - (cy * maxClusterSize);
+                var ccz = z - (cz * maxClusterSize);
+
+                var clusterIndex = ccx + ccy * cluster.Width + ccz * cluster.Width * cluster.Height;
+
+                cluster.Data[clusterIndex] = data[i];
+            }
+
+            return clusters;
         }
     }
 }

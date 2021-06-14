@@ -106,20 +106,20 @@ namespace Volumes.Imports.Ui
 
         private void TriggerChange()
         {
-            var needToCrop = importWizard.IsAutomaticCrop;
+            // var needToCrop = importWizard.IsAutomaticCrop;
             var result = importWizard.Bounds;
-            if (needToCrop)
-            {
-                var warning =
-                    $"Volume is too large and will be automatically cropped. Volume has to be under 2048x2048x2048 voxels and 2GB\n"+
-                    $"Resulting volume is {result.Width}x{result.Height}x{result.Depth} and {importWizard.VolumeSize(result)}B";
-            
-                ShowMessage(warning, HelpBoxMessageType.Warning);
-            }
-            else
-            {
+            // if (needToCrop)
+            // {
+            //     var warning =
+            //         $"Volume is too large and will be automatically cropped. Volume has to be under 2048x2048x2048 voxels and 2GB\n"+
+            //         $"Resulting volume is {result.Width}x{result.Height}x{result.Depth} and {importWizard.VolumeSize(result)}B";
+            //
+            //     ShowMessage(warning, HelpBoxMessageType.Warning);
+            // }
+            // else
+            // {
                 ShowMessage($"Resulting volume is {result.Width}x{result.Height}x{result.Depth} and {importWizard.VolumeSize(result)}B", HelpBoxMessageType.Info);
-            }
+            // }
         }
 
         private void ShowMessage(string text, HelpBoxMessageType type)

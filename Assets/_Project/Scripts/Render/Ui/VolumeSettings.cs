@@ -7,57 +7,51 @@ namespace Render.Ui
     {
         [SerializeField] private VolumeRenderManager volumeRenderManager;
 
-        private Material material => volumeRenderManager?.VolumeRender?.Material;
-
-        public bool IsActive => material != null;
+        public bool IsActive => true;
         
         public float Size
         {
-            get => volumeRenderManager?.VolumeRender?.transform?.localScale.x ?? -1;
-            set
-            {
-                var volumeRenderTransform = volumeRenderManager?.VolumeRender?.transform;
-                if (volumeRenderTransform)
-                {
-                    volumeRenderTransform.localScale = new Vector3(value, value, value);
-                }
-            }
+            get => volumeRenderManager.Size;
+            set => volumeRenderManager.Size = value;
         }
 
         public float Alpha
         {
-            get => material?.GetFloat("_Alpha") ?? -1;
-            set => material?.SetFloat("_Alpha", value);
+            get => volumeRenderManager.VolumeRender.Alpha;
+            set => volumeRenderManager.VolumeRender.Alpha = value;
         }
 
         public float AlphaThreshold
         {
-            get => material?.GetFloat("_AlphaThreshold") ?? -1;
-            set => material?.SetFloat("_AlphaThreshold", value);
+            get => volumeRenderManager.VolumeRender.AlphaThreshold;
+            set => volumeRenderManager.VolumeRender.AlphaThreshold = value;
         }
 
         public float StepDistance
         {
-            get => material?.GetFloat("_StepDistance") ?? -1;
-            set => material?.SetFloat("_StepDistance", value);
+            get => volumeRenderManager.VolumeRender.StepDistance;
+            set => volumeRenderManager.VolumeRender.StepDistance = value;
         }
+
 
         public float ClipMinimumThreashold
         {
-            get => material?.GetFloat("_ClipMin") ?? -1;
-            set => material?.SetFloat("_ClipMin", Mathf.Clamp01(value));
+            get => volumeRenderManager.VolumeRender.ClipMinimumThreashold;
+            set => volumeRenderManager.VolumeRender.ClipMinimumThreashold = value;
         }
+
 
         public float ClipMaximumThreashold
         {
-            get => material?.GetFloat("_ClipMax") ?? -1;
-            set => material?.SetFloat("_ClipMax", Mathf.Clamp01(value));
+            get => volumeRenderManager.VolumeRender.ClipMaximumThreashold;
+            set => volumeRenderManager.VolumeRender.ClipMaximumThreashold = value;
         }
+
 
         public int MaxStepThreshold
         {
-            get => material?.GetInt("_MaxStepThreshold") ?? -1;
-            set => material?.SetInt("_MaxStepThreshold", value);
+            get => volumeRenderManager.VolumeRender.MaxStepThreshold;
+            set => volumeRenderManager.VolumeRender.MaxStepThreshold = value;
         }
 
         public IEnumerable<RenderPreset> RenderPresets => volumeRenderManager.RenderPresets;
