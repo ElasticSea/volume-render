@@ -23,9 +23,8 @@ Shader "Volume"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile __ _CLIP_ON __ _ALPHATHRESHOLD_ON
 
-            #include "UnityCG.cginc"
-            
             // Allowed floating point inaccuracy
             #define EPSILON 0.00001f
 
@@ -127,18 +126,25 @@ Shader "Volume"
                     rayOrigin = entryPoint + rayDirection * dstTravelled;
                     
                     float sampledValue = tex3D(_Volume, rayOrigin + float3(0.5,0.5,0.5)).r;
+#ifdef _CLIP_ON
                     if(_ClipMin <= sampledValue && sampledValue <= _ClipMax){
+#endif
                         float density = sampledValue * _Alpha;
                         
                         // Blend Color
                         float4 sampleColor = float4(sampledValue, sampledValue, sampledValue, density);
                         color = BlendUnder(color, sampleColor);
                         
+#ifdef _ALPHATHRESHOLD_ON
                         if(color.a >= _AlphaThreshold){
                             color.a = 1;
                             break;
                         }
+#endif
+
+#ifdef _CLIP_ON
                     }
+#endif
                     
                     dstTravelled += _StepDistance;
                 }
