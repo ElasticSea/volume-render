@@ -260,7 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 806afbb10285e094b8ba6c646f41f11f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position: {x: -1.942, y: 2.365, z: 0.695}
+  position: {x: 0.193, y: 2.365, z: -0.24}
   manager: {fileID: 1770833861}
 --- !u!114 &1770833861 stripped
 MonoBehaviour:
