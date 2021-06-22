@@ -36,7 +36,8 @@ namespace Volumes.Factories
             }
             var rawVolume = new RawVolume(size, size, size, data);
             
-            var packed = rawVolume.Data.Pack( ChannelDepth.Quarter8, false);
+            var clusters = rawVolume.Data.ToClusters(size, size, size, 128, false, true);
+            var packed = clusters.PackClusters(ChannelDepth.Quarter8, true);
 
             var bits = ChannelDepth.Quarter8.GetBitsSize();
             
