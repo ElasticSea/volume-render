@@ -6,23 +6,70 @@ namespace Render
 {
     public class VolumeRender : MonoBehaviour, IVolumeRenderer
     {
+        [SerializeField] private MeshRenderer renderer;
+        
+        [SerializeField] private float alpha;
+        [SerializeField] private float alphaThreshold;
+        [SerializeField] private float stepDistance;
+        [SerializeField] private float clipMinimumThreashold;
+        [SerializeField] private float clipMaximumThreashold;
+        [SerializeField] private bool isGrayscale;
+        
         private Material material;
-
-        public Material Material
-        {
-            set
-            {
-                material = value;
-                GetComponent<Renderer>().material = material;
-            }
-        }
+        private Texture3D[,,] volume;
 
         private void Awake()
         {
-            material = GetComponent<Renderer>().material;
+            material = renderer.material;
+            SetAlpha(alpha);
+            SetAlphaThreshold(alphaThreshold);
+            SetStepDistance(stepDistance);
+            SetClipMinimumThreashold(clipMinimumThreashold);
+            SetClipMaximumThreashold(clipMaximumThreashold);
+            SetGrayscale(isGrayscale);
         }
 
-        private float alpha;
+        private void SetAlpha(float alpha)
+        {
+            material.SetFloat("_Alpha", alpha);
+        }
+
+        private void SetAlphaThreshold(float alphaThreshold)
+        {
+            material.SetFloat("_AlphaThreshold", alphaThreshold);
+            material.EnableKeyword("_ALPHATHRESHOLD_ON", alphaThreshold < 1);
+        }
+        
+        private void SetStepDistance(float stepDistance)
+        {
+            material.SetFloat("_StepDistance", stepDistance);
+        }
+        
+        private void SetClipMinimumThreashold(float clipMinimumThreashold)
+        {
+            material.SetFloat("_ClipMin", clipMinimumThreashold);
+            material.EnableKeyword("_CLIP_ON", clipMinimumThreashold > 0 || clipMaximumThreashold < 1);
+        }
+        
+        private void SetClipMaximumThreashold(float clipMaximumThreashold)
+        {
+            material.SetFloat("_ClipMax", clipMaximumThreashold);
+            material.EnableKeyword("_CLIP_ON", clipMinimumThreashold > 0 || clipMaximumThreashold < 1);
+        }
+        
+        private void SetGrayscale(bool grayscale)
+        {
+            if (grayscale)
+            {
+                material.DisableKeyword("_COLOR_ON");
+                material.EnableKeyword("_COLOR_OFF");
+            }
+            else
+            {
+                material.EnableKeyword("_COLOR_ON");
+                material.DisableKeyword("_COLOR_OFF");
+            }
+        }
 
         public float Alpha
         {
@@ -30,11 +77,9 @@ namespace Render
             set
             {
                 alpha = value;
-                material.SetFloat("_Alpha", alpha);
+                SetAlpha(alpha);
             }
         }
-
-        private float alphaThreshold;
 
         public float AlphaThreshold
         {
@@ -42,12 +87,9 @@ namespace Render
             set
             {
                 alphaThreshold = value;
-                material.SetFloat("_AlphaThreshold", alphaThreshold);
-                material.EnableKeyword("_ALPHATHRESHOLD_ON", alphaThreshold < 1);
+                SetAlphaThreshold(alphaThreshold);
             }
         }
-
-        private float stepDistance;
 
         public float StepDistance
         {
@@ -55,11 +97,9 @@ namespace Render
             set
             {
                 stepDistance = value;
-                material.SetFloat("_StepDistance", stepDistance);
+                SetStepDistance(stepDistance);
             }
         }
-
-        private float clipMinimumThreashold;
 
         public float ClipMinimumThreashold
         {
@@ -67,12 +107,9 @@ namespace Render
             set
             {
                 clipMinimumThreashold = value;
-                material.SetFloat("_ClipMin", clipMinimumThreashold);
-                material.EnableKeyword("_CLIP_ON", clipMinimumThreashold > 0 || clipMaximumThreashold < 1);
+                SetClipMinimumThreashold(clipMinimumThreashold);
             }
         }
-
-        private float clipMaximumThreashold;
 
         public float ClipMaximumThreashold
         {
@@ -80,31 +117,46 @@ namespace Render
             set
             {
                 clipMaximumThreashold = value;
-                material.SetFloat("_ClipMax", clipMaximumThreashold);
-                material.EnableKeyword("_CLIP_ON", clipMinimumThreashold > 0 || clipMaximumThreashold < 1);
+                SetClipMaximumThreashold(clipMaximumThreashold);
             }
         }
 
-        private int maxStepThreshold;
-        private Texture3D volume;
-
-        public int MaxStepThreshold
+        public bool IsGrayscale
         {
-            get => maxStepThreshold;
+            get => isGrayscale;
             set
             {
-                maxStepThreshold = value;
-                material.SetInt("_MaxStepThreshold", maxStepThreshold);
+                isGrayscale = value;
+                SetGrayscale(isGrayscale);
             }
         }
 
-        public Texture3D Volume
+        public void SetVolume(Texture3D[,,] volume)
         {
-            get => volume;
-            set
+            this.volume = volume;
+            var volumeCount = volume.GetLength(0) * volume.GetLength(1) * volume.GetLength(2);
+
+            switch (volumeCount)
             {
-                volume = value;
-                material.SetTexture("_Volume", volume);
+                case 1:
+                    material.SetTexture("_Volume", volume[0, 0, 0]);
+                    material.EnableKeyword("_OCTVOLUME_OFF", true);
+                    material.EnableKeyword("_OCTVOLUME_ON", false);
+                    break;
+                case 8:
+                    material.SetTexture("_Volume000", volume[0, 0, 0]);
+                    material.SetTexture("_Volume001", volume[0, 0, 1]);
+                    material.SetTexture("_Volume010", volume[0, 1, 0]);
+                    material.SetTexture("_Volume011", volume[0, 1, 1]);
+                    material.SetTexture("_Volume100", volume[1, 0, 0]);
+                    material.SetTexture("_Volume101", volume[1, 0, 1]);
+                    material.SetTexture("_Volume110", volume[1, 1, 0]);
+                    material.SetTexture("_Volume111", volume[1, 1, 1]);
+                    material.EnableKeyword("_OCTVOLUME_OFF", false);
+                    material.EnableKeyword("_OCTVOLUME_ON", true);
+                    break;
+                default:
+                    throw new ArgumentException($"Renderer does not support {volumeCount} volumes.");
             }
         }
 
@@ -119,15 +171,21 @@ namespace Render
 
         private void OnDestroy()
         {
-            Destroy(Volume);
+            foreach (var v in volume)
+            {
+                Destroy(v);
+            }
         }
 
         private void OnDrawGizmos()
         {
-            var pos = material.GetVector("_CutOrigin");
-            var nor = material.GetVector("_CutNormal");
-            Gizmos.matrix = transform.localToWorldMatrix;
-            Gizmos.DrawLine(pos, pos + nor);
+            if (material)
+            {
+                var pos = material.GetVector("_CutOrigin");
+                var nor = material.GetVector("_CutNormal");
+                Gizmos.matrix = transform.localToWorldMatrix;
+                Gizmos.DrawLine(pos, pos + nor);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
+using UnityEngine;
 using Volumes;
 
 namespace Tests.Editor.Pipelines
@@ -16,7 +17,7 @@ namespace Tests.Editor.Pipelines
                 [0] = 42
             };
 
-            var expected = new RawVolume(1, 1, 1, data);
+            var expected = new RawVolume<float>(1, 1, 1, data);
             var actual = expected.Crop(new VolumeBounds(0, 0, 0, 1, 1, 1), multithreaded);
 
             Assert.AreEqual(42, actual.Data[0]);
@@ -42,7 +43,7 @@ namespace Tests.Editor.Pipelines
                 [i++] = 0, [i++] = 0, [i++] = 0,
             };
 
-            var expected = new RawVolume(3, 3, 3, data);
+            var expected = new RawVolume<float>(3, 3, 3, data);
             var actual = expected.Crop(new VolumeBounds(1, 1, 1, 1, 1, 1), multithreaded);
 
             Assert.AreEqual(1, actual.Data[0]);
@@ -68,7 +69,7 @@ namespace Tests.Editor.Pipelines
                 [i++] = 0, [i++] = 7, [i++] = 8,
             };
 
-            var actual = new RawVolume(3, 3, 3, data).Crop(new VolumeBounds(1, 1, 1, 2, 2, 2), multithreaded);
+            var actual = new RawVolume<float>(3, 3, 3, data).Crop(new VolumeBounds(1, 1, 1, 2, 2, 2), multithreaded);
 
             i = 0;
             var expected = new BigArray<float>(2 * 2 * 2)
@@ -102,7 +103,7 @@ namespace Tests.Editor.Pipelines
                 [i++] = 0, [i++] = 7, [i++] = 8,
             };
 
-            var clusters = data.ToClusters(3, 3, 3, 1, false, false);
+            var clusters = data.ToClusters(new Vector3Int(3, 3, 3), new Vector3Int(1, 1, 1), false, false);
             
             Assert.AreEqual(27, clusters.Length);
         }
@@ -134,7 +135,7 @@ namespace Tests.Editor.Pipelines
                 [i++] = 7, [i++] = 8, [i++] = 7, [i++] = 8,
             };
 
-            var clusters = data.ToClusters(4, 4, 4, 2, false, false);
+            var clusters = data.ToClusters(new Vector3Int(4, 4, 4), new Vector3Int(2, 2, 2), false, false);
             
             Assert.AreEqual(8, clusters.Length);
             foreach (var cluster in clusters)
@@ -165,7 +166,7 @@ namespace Tests.Editor.Pipelines
                 [i++] = 1, [i++] = 2, [i++] = 1,
             };
 
-            var clusters = data.ToClusters(3, 3, 3, 2, false, false).Cast<UnpackedVolumeCluster<byte>>().ToArray();
+            var clusters = data.ToClusters(new Vector3Int(3, 3, 3), new Vector3Int(2, 2, 2), false, false).Cast<UnpackedVolumeCluster<byte>>().ToArray();
             
             Assert.AreEqual(8, clusters.Length);
             Assert.AreEqual(8, clusters[0].Data.Length);
@@ -200,7 +201,7 @@ namespace Tests.Editor.Pipelines
                 [i++] = 1, [i++] = 2, [i++] = 1,
             };
 
-            var clusters = data.ToClusters(3, 3, 3, 2, true, false).Cast<UnpackedVolumeCluster<byte>>().ToArray();
+            var clusters = data.ToClusters(new Vector3Int(3, 3, 3), new Vector3Int(2, 2, 2), true, false).Cast<UnpackedVolumeCluster<byte>>().ToArray();
             
             Assert.AreEqual(8, clusters.Length);
             Assert.AreEqual(8, clusters[0].Data.Length);

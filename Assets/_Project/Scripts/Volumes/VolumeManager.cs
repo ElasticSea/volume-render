@@ -32,7 +32,7 @@ namespace Volumes
             var depth = BitConverter.ToInt32(dimensionsBuffer, 8);
             var min = BitConverter.ToSingle(dimensionsBuffer, 12);
             var max = BitConverter.ToSingle(dimensionsBuffer, 16);
-            var bits = BitConverter.ToInt32(dimensionsBuffer, 20);
+            var bits = (VolumeFormat) BitConverter.ToInt32(dimensionsBuffer, 20);
 
             return new Volume(width, height, depth, min, max, bits, null);
         }
@@ -46,22 +46,34 @@ namespace Volumes
             var depth = BitConverter.ToInt32(dimensionsBuffer, 8);
             var min = BitConverter.ToSingle(dimensionsBuffer, 12);
             var max = BitConverter.ToSingle(dimensionsBuffer, 16);
-            var bits = BitConverter.ToInt32(dimensionsBuffer, 20);
+            var format = (VolumeFormat) BitConverter.ToInt32(dimensionsBuffer, 20);
             var clustersWidth = BitConverter.ToInt32(dimensionsBuffer, 24);
             var clustersHeight = BitConverter.ToInt32(dimensionsBuffer, 28);
             var clustersDepth = BitConverter.ToInt32(dimensionsBuffer, 32);
 
-            TextureFormat format;
-            switch (bits)
+            TextureFormat textureFormat = TextureFormat.Alpha8;
+            int bytesPerVoxel = -1;
+            switch (format)
             {
-                case 8:
-                    format = TextureFormat.R8;
+                case VolumeFormat.Gray32:
+                    textureFormat = TextureFormat.RFloat;
+                    bytesPerVoxel = 4;
                     break;
-                case 16:
-                    format = TextureFormat.R16;
+                case VolumeFormat.Gray16:
+                    textureFormat = TextureFormat.R16;
+                    bytesPerVoxel = 2;
                     break;
-                case 32:
-                    format = TextureFormat.RFloat;
+                case VolumeFormat.Gray8:
+                    textureFormat = TextureFormat.R8;
+                    bytesPerVoxel = 1;
+                    break;
+                case VolumeFormat.RGBA64:
+                    break;
+                case VolumeFormat.RGBA32:
+                    textureFormat = TextureFormat.RGBA32;
+                    bytesPerVoxel = 4;
+                    break;
+                case VolumeFormat.RGBA16:
                     break;
                 default:
                     throw new ArgumentException("Does not support partial bytes.");
@@ -88,10 +100,10 @@ namespace Volumes
                         };
                         clusters[cx, cy, cz] = cluster;
 
-                        var texture = new Texture3D(cluster.Width, cluster.Height, cluster.Depth, format, false);
+                        var texture = new Texture3D(cluster.Width, cluster.Height, cluster.Depth, textureFormat, false);
                         texture.filterMode = FilterMode.Bilinear;
                         texture.wrapMode = TextureWrapMode.Clamp;
-                        var len = cluster.Width * cluster.Height * cluster.Depth * (bits / 8);
+                        var len = cluster.Width * cluster.Height * cluster.Depth * bytesPerVoxel;
                         SetPixelData(texture, stream, len);
                         texture.Apply(false, true);
                         cluster.Texture = texture;
@@ -118,7 +130,7 @@ namespace Volumes
 
 
             Debug.Log(GC.GetTotalMemory(true));
-            return new RuntimeVolume(width, height, depth, min, max, bits, clusters);
+            return new RuntimeVolume(width, height, depth, min, max, format, clusters);
         }
 
         private static void SetPixelData(Texture3D texture3D, Stream stream, long length)
@@ -151,7 +163,7 @@ namespace Volumes
             Write(stream, BitConverter.GetBytes(volume.Depth));
             Write(stream, BitConverter.GetBytes(volume.Min));
             Write(stream, BitConverter.GetBytes(volume.Max));
-            Write(stream, BitConverter.GetBytes(volume.ChannelDepthBits));
+            Write(stream, BitConverter.GetBytes((int)volume.VolumeFormat));
 
             Write(stream, BitConverter.GetBytes(volume.Clusters.GetLength(0)));
             Write(stream, BitConverter.GetBytes(volume.Clusters.GetLength(1)));

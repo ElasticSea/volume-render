@@ -94,3 +94,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b46b4cc837243c683945ecd7ff64b8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  renderer: {fileID: 2426607505844704304}
+  alpha: 0
+  alphaThreshold: 0
+  stepDistance: 0
+  clipMinimumThreashold: 0
+  clipMaximumThreashold: 1
+  isGrayscale: 0

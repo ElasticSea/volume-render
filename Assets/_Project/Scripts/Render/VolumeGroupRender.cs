@@ -76,16 +76,16 @@ namespace Render
             }
         }
 
-        private int maxStepThreshold;
-        public int MaxStepThreshold
+        private bool isGrayscale;
+        public bool IsGrayscale
         {
-            get => maxStepThreshold;
+            get => isGrayscale;
             set
             {
-                maxStepThreshold = value;
+                isGrayscale = value;
                 for (var i = 0; i < volumeRenders.Length; i++)
                 {
-                    volumeRenders[i].MaxStepThreshold = value;
+                    volumeRenders[i].IsGrayscale = value;
                 }
             }
         }

@@ -28,7 +28,7 @@ namespace Volumes.Imports.Ui
             
             infoBox.visible = false;
 
-            UiUtils.EnumField(Utils.GetEnumValues<ChannelDepth>(), importWizard.Depth, container, depth =>
+            UiUtils.EnumField(Utils.GetEnumValues<VolumeFormat>(), importWizard.Depth, container, depth =>
             {
                 HandleErrors(() =>
                 {

@@ -9,7 +9,7 @@ namespace Volumes.Imports
 {
     public class ImportManager
     {
-        public static Volume Import(IRawVolumeImport source, ChannelDepth channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
+        public static Volume Import(IRawVolumeImport source, VolumeFormat channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
         {
             var volumeData = ImportInternal(source, channelDepth, targetBounds, multithreaded);
 
@@ -23,7 +23,7 @@ namespace Volumes.Imports
             return volumeData;
         }
 
-        private static Volume ImportInternal(IRawVolumeImport source, ChannelDepth channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
+        private static Volume ImportInternal(IRawVolumeImport source, VolumeFormat channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
         {
             Stopwatch sw = null;
             
@@ -52,28 +52,20 @@ namespace Volumes.Imports
             var w = originalVolume.Width;
             var h = originalVolume.Height;
             var d = originalVolume.Depth;
-            var isPadded = true;
             
             // Cluster size?
             sw = Stopwatch.StartNew();
-            var maxClusterSize = 256;
-            var clusters = normalized.ToClusters(originalBounds.Width, originalBounds.Height, originalBounds.Depth, maxClusterSize, isPadded, multithreaded);
-            PrintSw("ToClusters",sw);
+            var size = new Vector3Int(originalBounds.Width, originalBounds.Height, originalBounds.Depth);
+            
+            var clusters = normalized.ToOctClusters(size, multithreaded);
 
-            if (isPadded)
-            {
-                w = clusters.GetLength(0) * maxClusterSize;
-                h = clusters.GetLength(1) * maxClusterSize;
-                d = clusters.GetLength(2) * maxClusterSize;
-            }
+            PrintSw("ToClusters",sw);
 
             sw = Stopwatch.StartNew();
             var packedClusters = clusters.PackClusters(channelDepth, multithreaded);
             PrintSw("PackClusters",sw);
 
-            var bits = channelDepth.GetBitsSize();
-            
-            return new Volume(w, h, d, min, max, bits, packedClusters);
+            return new Volume(w, h, d, min, max, channelDepth, packedClusters);
         }
 
         private static void PrintSw(string title, Stopwatch sw)

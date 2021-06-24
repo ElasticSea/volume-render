@@ -13,7 +13,6 @@
                 <ui:TextField name="stepDistance" picking-mode="Ignore" label="Step Distance" value="filler text" text="filler text" />
                 <ui:Slider name="minClipThreshold" picking-mode="Ignore" label="Clip Minimum Threashold" value="filler text" text="filler text" high-value="1" />
                 <ui:Slider name="maxClipThreshold" picking-mode="Ignore" label="Clip Maximum Threashold" value="filler text" text="Render" high-value="1" />
-                <ui:TextField name="maxStepThreshold" picking-mode="Ignore" label="Max Step Threshold" value="filler text" text="filler text" />
             </ui:VisualElement>
             <ui:VisualElement name="volumesPanel" style="height: auto; flex-grow: 1; background-color: rgb(210, 210, 210);">
                 <ui:Label text="Volumes" display-tooltip-when-elided="true" style="font-size: 18px;" />

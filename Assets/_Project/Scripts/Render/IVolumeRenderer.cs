@@ -9,7 +9,6 @@ namespace Render
         float StepDistance { get; set; }
         float ClipMinimumThreashold { get; set; }
         float ClipMaximumThreashold { get; set; }
-        int MaxStepThreshold { get; set; }
         void SetCutPlane(Vector3 position, Vector3 normal);
     }
 }

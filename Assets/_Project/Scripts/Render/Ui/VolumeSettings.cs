@@ -81,14 +81,14 @@ namespace Render.Ui
             }
         }
 
-        public int MaxStepThreshold
+        public bool IsGrayscale
         {
-            get => volumeRenderManager.VolumeRender?.MaxStepThreshold  ?? 0;
+            get => volumeRenderManager.VolumeRender?.IsGrayscale ?? false;
             set
             {
                 if (volumeRenderManager.VolumeRender)
                 {
-                    volumeRenderManager.VolumeRender.MaxStepThreshold = value;
+                    volumeRenderManager.VolumeRender.IsGrayscale = value;
                 }
             }
         }

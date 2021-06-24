@@ -10,7 +10,7 @@ namespace Volumes.Imports.Ui
     {
         [SerializeField] private string sourcePath;
         [SerializeField] private string volumeName;
-        [SerializeField] private ChannelDepth channelDepth;
+        [SerializeField] private VolumeFormat channelDepth;
         [SerializeField] private bool multithreaded = true;
         [SerializeField] private int offset;
 
@@ -26,7 +26,7 @@ namespace Volumes.Imports.Ui
             set => volumeName = value;
         }
 
-        public ChannelDepth Depth
+        public VolumeFormat Depth
         {
             get => channelDepth;
             set => channelDepth = value;
