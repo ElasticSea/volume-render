@@ -10,8 +10,5 @@ namespace Render
         
         // Step distance between raycast samples
         public float StepDistance;
-        
-        // Maximum number of steps for each pixel
-        public int MaxStepThreshold;
     }
 }

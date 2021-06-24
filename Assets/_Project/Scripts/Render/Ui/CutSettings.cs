@@ -17,7 +17,7 @@ namespace Render.Ui
 
                 var normal = -camera.transform.forward;
                 var position = -normal * (cutProgress * 2 - 1);
-                volumeRenderManager.Cut(position, normal);
+                volumeRenderManager.VolumeRender.SetCutPlane(position, normal);
             }
         }
     }

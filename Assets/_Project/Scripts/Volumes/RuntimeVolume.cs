@@ -9,18 +9,18 @@ namespace Volumes
         public int Depth { get; }
         public float Min { get; }
         public float Max { get; }
-        public int ChannelDepthBits { get; }
-        public Texture3D Texture { get; }
+        public VolumeFormat Format { get; }
+        public RuntimeVolumeCluster[,,] Clusters { get; }
 
-        public RuntimeVolume(int width, int height, int depth, float min, float max, int channelDepthBits, Texture3D texture)
+        public RuntimeVolume(int width, int height, int depth, float min, float max, VolumeFormat format, RuntimeVolumeCluster[,,] clusters)
         {
             Width = width;
             Height = height;
             Depth = depth;
             Min = min;
             Max = max;
-            ChannelDepthBits = channelDepthBits;
-            Texture = texture;
+            Format = format;
+            Clusters = clusters;
         }
     }
 }

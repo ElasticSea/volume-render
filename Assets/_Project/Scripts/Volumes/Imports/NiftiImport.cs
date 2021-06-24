@@ -17,7 +17,7 @@ namespace Volumes.Imports
             this.multithreaded = multithreaded;
         }
 
-        private static RawVolume ReadVolume(Nifti.NET.Nifti nifti, FileStream stream, bool multithreaded = true)
+        private static RawVolume<float> ReadVolume(Nifti.NET.Nifti nifti, FileStream stream, bool multithreaded = true)
         {
             if (nifti.Header.datatype != NiftiHeader.DT_FLOAT32)
             {
@@ -32,7 +32,7 @@ namespace Volumes.Imports
             var width = nifti.Dimensions[0];
             var height = nifti.Dimensions[1];
             var depth = nifti.Dimensions[2];
-            return new RawVolume(width, height, depth, data);
+            return new RawVolume<float>(width, height, depth, data);
         }
 
         private static void ReadFloatsSt(BigArray<float> data, Stream stream, bool littleEndian)
@@ -156,7 +156,7 @@ namespace Volumes.Imports
             }
         }
 
-        public RawVolume ReadData()
+        public RawVolume<float> ReadData()
         {
             using (var stream = File.OpenRead(path))
             {

@@ -1,13 +1,13 @@
 namespace Volumes
 {
-    public class RawVolume
+    public class RawVolume<T>
     {
         public int Width { get; }
         public int Height { get; }
         public int Depth { get; }
-        public BigArray<float> Data { get; }
-        
-        public RawVolume(int width, int height, int depth, BigArray<float> data)
+        public BigArray<T> Data { get; }
+
+        public RawVolume(int width, int height, int depth, BigArray<T> data)
         {
             Width = width;
             Height = height;

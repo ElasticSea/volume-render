@@ -22,7 +22,6 @@ namespace Render.Ui
             var stepDistance = panel.Q<TextField>("stepDistance");
             var minClipThreshold = panel.Q<Slider>("minClipThreshold");
             var maxClipThreshold = panel.Q<Slider>("maxClipThreshold");
-            var maxStepThreshold = panel.Q<TextField>("maxStepThreshold");
 
             panel.visible = volumeSettings.IsActive;
 
@@ -35,7 +34,6 @@ namespace Render.Ui
                 stepDistance.value = volumeSettings.StepDistance.ToString("F16");
                 minClipThreshold.value = volumeSettings.ClipMinimumThreashold;
                 maxClipThreshold.value = volumeSettings.ClipMaximumThreashold;
-                maxStepThreshold.value = volumeSettings.MaxStepThreshold.ToString("N");
             }
 
             UiUtils.EnumField(volumeSettings.RenderPresets, container, present =>
@@ -91,16 +89,6 @@ namespace Render.Ui
             {
                 volumeSettings.ClipMaximumThreashold = evt.newValue;
             });
-
-            maxStepThreshold.value = volumeSettings.MaxStepThreshold.ToString("N");
-            maxStepThreshold.RegisterValueChangedCallback(evt =>
-            {
-                if (int.TryParse(evt.newValue, out var val))
-                {
-                    volumeSettings.MaxStepThreshold = val;
-                }
-            });
-
             
             // TODO Remove
             uiDocument.rootVisualElement.Q<Button>("refreshAll").clicked += () =>

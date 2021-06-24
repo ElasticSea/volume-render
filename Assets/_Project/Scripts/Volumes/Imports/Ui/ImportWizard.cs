@@ -10,7 +10,7 @@ namespace Volumes.Imports.Ui
     {
         [SerializeField] private string sourcePath;
         [SerializeField] private string volumeName;
-        [SerializeField] private ChannelDepth channelDepth;
+        [SerializeField] private VolumeFormat channelDepth;
         [SerializeField] private bool multithreaded = true;
         [SerializeField] private int offset;
 
@@ -26,7 +26,7 @@ namespace Volumes.Imports.Ui
             set => volumeName = value;
         }
 
-        public ChannelDepth Depth
+        public VolumeFormat Depth
         {
             get => channelDepth;
             set => channelDepth = value;
@@ -56,30 +56,30 @@ namespace Volumes.Imports.Ui
         {
             get
             {
-                var targetBounds = GetValidBounds(OriginalBounds, channelDepth);
+                var targetBounds = OriginalBounds;
                 targetBounds.Offset(offset);
                 return targetBounds;
             }
         }
-
-        public bool IsAutomaticCrop
-        {
-            get
-            {
-                var original = OriginalBounds;
-                var target = original;
-                target.Offset(offset);
-
-                var result = GetValidBounds(target, channelDepth);
-                
-                
-                var needToCrop = result.Width != target.Width || 
-                                 result.Height != target.Height || 
-                                 result.Depth != target.Depth;
-
-                return needToCrop;
-            }
-        }
+        //
+        // public bool IsAutomaticCrop
+        // {
+        //     get
+        //     {
+        //         var original = OriginalBounds;
+        //         var target = original;
+        //         target.Offset(offset);
+        //
+        //         var result = GetValidBounds(target, channelDepth);
+        //         
+        //         
+        //         var needToCrop = result.Width != target.Width || 
+        //                          result.Height != target.Height || 
+        //                          result.Depth != target.Depth;
+        //
+        //         return needToCrop;
+        //     }
+        // }
  
         public long VolumeSize(VolumeBounds bounds)
         {
@@ -100,27 +100,27 @@ namespace Volumes.Imports.Ui
             //volume.Save(volumeName);
         }
 
-        private static VolumeBounds GetValidBounds(VolumeBounds bounds, ChannelDepth depth)
-        {
-            var bytesPerPixel = depth.GetBitsSize() / 8f;
-
-            bounds.Width = Mathf.Min(bounds.Width, 2048);
-            bounds.Height = Mathf.Min(bounds.Height, 2048);
-            bounds.Depth = Mathf.Min(bounds.Depth, 2048);
-
-            var totalBytes = (long) bounds.Width * bounds.Height * bounds.Depth * bytesPerPixel;
-
-            var textureSizeLimit = 2146435071;
-            if (totalBytes > textureSizeLimit)
-            {
-                // 2146435071 is maximum index of non byte array
-                var maxVolume = (long) ((double) textureSizeLimit / bytesPerPixel);
-                var offset = CalculateOffset(bounds.Width, bounds.Height, bounds.Depth, maxVolume);
-                bounds.Offset(offset);
-            }
-
-            return bounds;
-        }
+        // private static VolumeBounds GetValidBounds(VolumeBounds bounds, ChannelDepth depth)
+        // {
+        //     var bytesPerPixel = depth.GetBitsSize() / 8f;
+        //
+        //     bounds.Width = Mathf.Min(bounds.Width, 2048);
+        //     bounds.Height = Mathf.Min(bounds.Height, 2048);
+        //     bounds.Depth = Mathf.Min(bounds.Depth, 2048);
+        //
+        //     var totalBytes = (long) bounds.Width * bounds.Height * bounds.Depth * bytesPerPixel;
+        //
+        //     var textureSizeLimit = 2146435071;
+        //     if (totalBytes > textureSizeLimit)
+        //     {
+        //         // 2146435071 is maximum index of non byte array
+        //         var maxVolume = (long) ((double) textureSizeLimit / bytesPerPixel);
+        //         var offset = CalculateOffset(bounds.Width, bounds.Height, bounds.Depth, maxVolume);
+        //         bounds.Offset(offset);
+        //     }
+        //
+        //     return bounds;
+        // }
 
         private static int CalculateOffset(int width, int height, int depth, long volume)
         {

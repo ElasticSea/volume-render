@@ -1,12 +1,15 @@
 using System;
+using System.Diagnostics;
+using System.Linq;
 using MathNet.Numerics.RootFinding;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Volumes.Imports
 {
     public class ImportManager
     {
-        public static Volume Import(IRawVolumeImport source, ChannelDepth channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
+        public static Volume Import(IRawVolumeImport source, VolumeFormat channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
         {
             var volumeData = ImportInternal(source, channelDepth, targetBounds, multithreaded);
 
@@ -20,10 +23,16 @@ namespace Volumes.Imports
             return volumeData;
         }
 
-        private static Volume ImportInternal(IRawVolumeImport source, ChannelDepth channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
+        private static Volume ImportInternal(IRawVolumeImport source, VolumeFormat channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
         {
+            Stopwatch sw = null;
+            
+            sw = Stopwatch.StartNew();
             var originalBounds = source.ReadHeader().Bounds;
+            PrintSw("ReadHeader",sw);
+            sw = Stopwatch.StartNew();
             var originalVolume = source.ReadData();
+            PrintSw("ReadData",sw);
 
             var needToCrop = targetBounds.Width != originalBounds.Width ||
                              targetBounds.Height != originalBounds.Height ||
@@ -31,19 +40,37 @@ namespace Volumes.Imports
             
             if (needToCrop)
             {
+                sw = Stopwatch.StartNew();
                 originalVolume = originalVolume.Crop(targetBounds, false);
+                PrintSw("Crop",sw);
             }
 
+            sw = Stopwatch.StartNew();
             var (normalized, min, max) = originalVolume.Data.Normalize(multithreaded);
-
-            var packed = normalized.Pack(channelDepth, multithreaded);
-
+            PrintSw("Normalize",sw);
+            
             var w = originalVolume.Width;
             var h = originalVolume.Height;
             var d = originalVolume.Depth;
-            var bits = channelDepth.GetBitsSize();
             
-            return new Volume(w, h, d, min, max, bits, packed);
+            // Cluster size?
+            sw = Stopwatch.StartNew();
+            var size = new Vector3Int(originalBounds.Width, originalBounds.Height, originalBounds.Depth);
+            
+            var clusters = normalized.ToOctClusters(size, multithreaded);
+
+            PrintSw("ToClusters",sw);
+
+            sw = Stopwatch.StartNew();
+            var packedClusters = clusters.PackClusters(channelDepth, multithreaded);
+            PrintSw("PackClusters",sw);
+
+            return new Volume(w, h, d, min, max, channelDepth, packedClusters);
+        }
+
+        private static void PrintSw(string title, Stopwatch sw)
+        {
+            Debug.Log(title +" took "+sw.ElapsedMilliseconds+"ms");
         }
     }
 }

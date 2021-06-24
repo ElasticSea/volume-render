@@ -2,11 +2,9 @@ Shader "Volume"
 {
     Properties
     {
-        _Volume ("Volume", 3D) = "white" {}
         _Alpha ("Alpha", float) = 0.01
         _AlphaThreshold ("Alpha Threshold", float) = 0.95
         _StepDistance ("Step Distance", float) = 0.01
-        _MaxStepThreshold ("Max Step Threshold", int) = 512
         _ClipMin ("Clip Minimum Threashold", Range (0, 1)) = 0
         _ClipMax ("Clip Maximum Threashold", Range (0, 1)) = 1
         _CutNormal ("Cut Normal", Vector) = (0,1,0)
@@ -16,15 +14,18 @@ Shader "Volume"
     {
         Blend One OneMinusSrcAlpha
         ZWrite Off
+        Cull Front
         Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
         Pass
         {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile _CLIP_OFF _CLIP_ON
+            #pragma multi_compile _ALPHATHRESHOLD_OFF _ALPHATHRESHOLD_ON
+            #pragma multi_compile _OCTVOLUME_OFF _OCTVOLUME_ON
+            #pragma multi_compile _COLOR_OFF _COLOR_ON
 
-            #include "UnityCG.cginc"
-            
             // Allowed floating point inaccuracy
             #define EPSILON 0.00001f
 
@@ -41,9 +42,58 @@ Shader "Volume"
                 float4 vertexLocalPos : TEXCOORD2;
             };
             
+#ifdef _OCTVOLUME_OFF
             uniform sampler3D _Volume;
+            
+            float4 SampleVolume(float3 pos){
+                return tex3D(_Volume, pos + float3(0.5,0.5,0.5));
+            }
+#endif
+            
+#ifdef _OCTVOLUME_ON
+            uniform sampler3D _Volume000;
+            uniform sampler3D _Volume001;
+            uniform sampler3D _Volume010;
+            uniform sampler3D _Volume011;
+            uniform sampler3D _Volume100;
+            uniform sampler3D _Volume101;
+            uniform sampler3D _Volume110;
+            uniform sampler3D _Volume111;
+            
+            float4 SampleVolume(float3 pos){
+                pos = (pos + float3(0.5,0.5,0.5)) * 2;
+                if(pos.z < 1){
+                    if(pos.y < 1){
+                        if(pos.x < 1){
+                            return tex3D(_Volume000, pos - float3(0.0, 0.0, 0.0));
+                        }else{
+                            return tex3D(_Volume100, pos - float3(1.0, 0.0, 0.0));
+                        }
+                    }else{
+                        if(pos.x < 1){
+                            return tex3D(_Volume010, pos - float3(0.0, 1.0, 0.0));
+                        }else{
+                            return tex3D(_Volume110, pos - float3(1.0, 1.0, 0.0));
+                        }
+                    }
+                }else{
+                    if(pos.y < 1){
+                        if(pos.x < 1){
+                            return tex3D(_Volume001, pos - float3(0.0, 0.0, 1.0));
+                        }else{
+                            return tex3D(_Volume101, pos - float3(1.0, 0.0, 1.0));
+                        }
+                    }else{
+                        if(pos.x < 1){
+                            return tex3D(_Volume011, pos - float3(0.0, 1.0, 1.0));
+                        }else{
+                            return tex3D(_Volume111, pos - float3(1.0, 1.0, 1.0));
+                        }
+                    }
+                }
+            }
+#endif
             uniform float _StepDistance;
-            uniform int _MaxStepThreshold;
             uniform float _ClipMin;
             uniform float _ClipMax;
             uniform float _Alpha;
@@ -116,8 +166,6 @@ Shader "Volume"
                 dstToBox = length(entryPoint - rayOrigin);
                 dstInsideBox = length(exitPoint - entryPoint);
                 
-                dstInsideBox = min(_StepDistance * _MaxStepThreshold, dstInsideBox);
-                
                 float dstTravelled = 0.0;
                 float4 color = 0;
 
@@ -125,19 +173,32 @@ Shader "Volume"
                 while (dstTravelled < dstInsideBox) {
                     rayOrigin = entryPoint + rayDirection * dstTravelled;
                     
-                    float sampledValue = tex3D(_Volume, rayOrigin + float3(0.5,0.5,0.5)).r;
-                    if(_ClipMin <= sampledValue && sampledValue <= _ClipMax){
-                        float density = sampledValue * _Alpha;
-                        
+#ifdef _COLOR_ON
+                    float4 sampleColor = SampleVolume(rayOrigin);
+#endif
+                    
+#ifdef _COLOR_OFF
+                    float sampledValue = SampleVolume(rayOrigin).r;
+                    float4 sampleColor = float4(sampledValue, sampledValue, sampledValue, sampledValue);
+#endif
+
+#ifdef _CLIP_ON
+                    if(_ClipMin <= sampleColor.a && sampleColor.a <= _ClipMax){
+#endif
                         // Blend Color
-                        float4 sampleColor = float4(sampledValue, sampledValue, sampledValue, density);
+                        sampleColor.a *= _Alpha;
                         color = BlendUnder(color, sampleColor);
                         
+#ifdef _ALPHATHRESHOLD_ON
                         if(color.a >= _AlphaThreshold){
                             color.a = 1;
                             break;
                         }
+#endif
+
+#ifdef _CLIP_ON
                     }
+#endif
                     
                     dstTravelled += _StepDistance;
                 }
