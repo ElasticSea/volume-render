@@ -1,6 +1,6 @@
-namespace Volumes.Imports
+namespace Volumes.Sources
 {
-    public interface IRawVolumeImport
+    public interface IVolumeSource
     {
         RawVolumeMetadata ReadHeader();
         RawVolume<float> ReadData();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ElasticSea.Framework.Util;
 using UnityEngine;
 
 namespace Volumes
@@ -120,15 +121,6 @@ namespace Volumes
                 GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
             }
 
-
-            // // SystemInfo.graphicsMemorySize / 4
-            // var vramBytes = (long) SystemInfo.graphicsMemorySize * 1024 * 1024;
-            // // Nvidia driver restricts single instance to 25%
-            // var maxInstanceBytes = vramBytes / 4;
-            // // var maxClusterSize = Mathf.FloorToInt(Mathf.Pow(maxInstanceBytes / (bits / 4), 1/3f));
-            // var maxClusterSize = 256;
-
-
             Debug.Log(GC.GetTotalMemory(true));
             return new RuntimeVolume(width, height, depth, min, max, format, clusters);
         }
@@ -155,7 +147,7 @@ namespace Volumes
             texture3D.SetPixelData(bytes, 0);
         }
 
-        public static void SaveVolume(Volume volume, string path)
+        private static void SaveVolumeAtPath(Volume volume, string path)
         {
             using var stream = new FileStream(path, FileMode.Create);
             Write(stream, BitConverter.GetBytes(volume.Width));
@@ -206,5 +198,13 @@ namespace Volumes
         }
 
         public static string VolumeDirectoryPath => Path.Combine(Application.persistentDataPath, "Volumes");
+
+        public static void SaveVolume(Volume volume, string name)
+        {
+            var dir = VolumeDirectoryPath;
+            Utils.EnsureDirectory(dir);
+            var path = Path.Combine(dir, $"{name}.vlm");
+            SaveVolumeAtPath(volume, path);
+        }
     }
 }

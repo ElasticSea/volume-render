@@ -1,17 +1,16 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
-using MathNet.Numerics.RootFinding;
 using UnityEngine;
+using Volumes.Sources;
 using Debug = UnityEngine.Debug;
 
 namespace Volumes.Imports
 {
     public class ImportManager
     {
-        public static Volume Import(IRawVolumeImport source, VolumeFormat channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
+        public static Volume Import(IVolumeSource source, VolumeFormat channelDepth, bool multithreaded = true)
         {
-            var volumeData = ImportInternal(source, channelDepth, targetBounds, multithreaded);
+            var volumeData = ImportInternal(source, channelDepth, multithreaded);
 
             // Attempt to force the GC release LOH memory and return the memory to OS
             // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
@@ -23,7 +22,7 @@ namespace Volumes.Imports
             return volumeData;
         }
 
-        private static Volume ImportInternal(IRawVolumeImport source, VolumeFormat channelDepth, VolumeBounds targetBounds, bool multithreaded = true)
+        private static Volume ImportInternal(IVolumeSource source, VolumeFormat channelDepth, bool multithreaded = true)
         {
             Stopwatch sw = null;
             
@@ -34,16 +33,16 @@ namespace Volumes.Imports
             var originalVolume = source.ReadData();
             PrintSw("ReadData",sw);
 
-            var needToCrop = targetBounds.Width != originalBounds.Width ||
-                             targetBounds.Height != originalBounds.Height ||
-                             targetBounds.Depth != originalBounds.Depth;
-            
-            if (needToCrop)
-            {
-                sw = Stopwatch.StartNew();
-                originalVolume = originalVolume.Crop(targetBounds, false);
-                PrintSw("Crop",sw);
-            }
+            // var needToCrop = targetBounds.Width != originalBounds.Width ||
+            //                  targetBounds.Height != originalBounds.Height ||
+            //                  targetBounds.Depth != originalBounds.Depth;
+            //
+            // if (needToCrop)
+            // {
+            //     sw = Stopwatch.StartNew();
+            //     originalVolume = originalVolume.Crop(targetBounds, false);
+            //     PrintSw("Crop",sw);
+            // }
 
             sw = Stopwatch.StartNew();
             var (normalized, min, max) = originalVolume.Data.Normalize(multithreaded);
@@ -53,7 +52,6 @@ namespace Volumes.Imports
             var h = originalVolume.Height;
             var d = originalVolume.Depth;
             
-            // Cluster size?
             sw = Stopwatch.StartNew();
             var size = new Vector3Int(originalBounds.Width, originalBounds.Height, originalBounds.Depth);
             

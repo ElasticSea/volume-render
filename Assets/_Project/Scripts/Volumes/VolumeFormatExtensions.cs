@@ -2,9 +2,9 @@ using System;
 
 namespace Volumes
 {
-    public static class ChannelDepthExtensions
+    public static class VolumeFormatExtensions
     {
-        public static int GetBitsSize(this VolumeFormat depth)
+        public static int GetBitsPerVoxel(this VolumeFormat depth)
         {
             switch (depth)
             {

@@ -4,14 +4,14 @@ using System.IO;
 using System.Threading.Tasks;
 using Nifti.NET;
 
-namespace Volumes.Imports
+namespace Volumes.Sources
 {
-    public class NiftiImport : IRawVolumeImport
+    public class NiftiSource : IVolumeSource
     {
         private string path;
         private bool multithreaded;
 
-        public NiftiImport(string path, bool multithreaded = true)
+        public NiftiSource(string path, bool multithreaded = true)
         {
             this.path = path;
             this.multithreaded = multithreaded;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Render
 {
-    public class VolumeRender : MonoBehaviour, IVolumeRenderer
+    public class VolumeRender : MonoBehaviour
     {
         [SerializeField] private MeshRenderer renderer;
         
