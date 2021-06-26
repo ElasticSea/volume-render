@@ -2,6 +2,8 @@ Shader "Volume"
 {
     Properties
     {
+        //[NoScaleOffset] _RandomNoise ("Random Noise", 2D) = "gray" {}
+        //_RandomOffset ("Random Offset", float) = 0.01
         _Alpha ("Alpha", float) = 0.01
         _AlphaThreshold ("Alpha Threshold", float) = 0.95
         _StepDistance ("Step Distance", float) = 0.01
@@ -19,6 +21,8 @@ Shader "Volume"
         Pass
         {
             CGPROGRAM
+            #include "UnityCG.cginc"
+
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile _CLIP_OFF _CLIP_ON
@@ -40,6 +44,7 @@ Shader "Volume"
                 float4 vertex : SV_POSITION;
                 float4 cameraLocalPos : TEXCOORD1;
                 float4 vertexLocalPos : TEXCOORD2;
+                float4 screenPos : TEXCOORD3;
             };
             
 #ifdef _OCTVOLUME_OFF
@@ -93,6 +98,8 @@ Shader "Volume"
                 }
             }
 #endif
+            //uniform sampler2D _RandomNoise;
+            //uniform float _RandomOffset;
             uniform float _StepDistance;
             uniform float _ClipMin;
             uniform float _ClipMax;
@@ -121,7 +128,8 @@ Shader "Volume"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.vertexLocalPos = v.vertex;
-                o.cameraLocalPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));
+                o.cameraLocalPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));     
+                o.screenPos = ComputeScreenPos(o.vertex);
                 return o;
             }
 
@@ -168,10 +176,13 @@ Shader "Volume"
                 
                 float dstTravelled = 0.0;
                 float4 color = 0;
+                
+                //float2 screenUV = i.screenPos.xy / i.screenPos.w;
+                //float randomOffset = tex2D(_RandomNoise, screenUV).a * _RandomOffset;
 
                 [loop]
                 while (dstTravelled < dstInsideBox) {
-                    rayOrigin = entryPoint + rayDirection * dstTravelled;
+                    rayOrigin = entryPoint + rayDirection * dstTravelled;//(dstTravelled + randomOffset);
                     
 #ifdef _COLOR_ON
                     float4 sampleColor = SampleVolume(rayOrigin);
