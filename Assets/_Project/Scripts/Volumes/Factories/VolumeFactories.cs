@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using Volumes.Imports;
 using Debug = UnityEngine.Debug;
+using Random = System.Random;
 
 namespace Volumes.Factories
 {
@@ -31,37 +32,52 @@ namespace Volumes.Factories
             });
         }
         
-        [MenuItem("Factory/RGBBox")]
-        public static void RGBBox()
-        {
-            var size = 256;
-            RunVolume("RGBBox", VolumeFormat.RGBA32, new Vector3Int(size, size, size), (x, y, z) =>
-            {
-                return new Color(x, y, z, 0.1f);
-            });
-        }
-        
         [MenuItem("Factory/Noise")]
         public static void Noise()
         {
-            var size = 1024;
-            var scale = 5f;
-            var colors = new[] {Color.clear, Color.clear,Color.clear, Color.red.SetAlpha(0.005f), Color.blue, Color.blue};
-            // var colors = new[] {Color.blue.SetAlpha(0.01f), Color.blue.SetAlpha(0.01f), Color.cyan.SetAlpha(0.02f), Color.yellow, Color.yellow};
-            var threashold = 0.05f;
+            var resolution = 1024;
+            var noiseScale = 5f;
+            var edgeWidth = 0.1f;
+            var sphereWidth = 0.2f;
+            var middleSphere = 0.5f - sphereWidth / 2;
+            var colorA = Color.red;
+            var colorB = Color.blue;
+            var colorOpacity = 0.01f;
+            var colors = new[]
+            {
+                Color.clear, Color.clear,
+                colorA.SetAlpha(0f), colorA.SetAlpha(colorOpacity),
+                colorB, colorB,
+                colorA.SetAlpha(colorOpacity), colorA.SetAlpha(0f),
+                Color.clear, Color.clear,
+            };
 
             var noise = new OpenSimplexNoise();
-            RunVolume("Noise", VolumeFormat.RGBA32, new Vector3Int(size, size, size), (x, y, z) =>
+            RunVolume("Noise", VolumeFormat.RGBA32, new Vector3Int(resolution, resolution, resolution), (x, y, z) =>
             {
-                var noiseValue = (float) noise.Evaluate(x * scale, y * scale, z * scale) /2 + 0.5f;
+                var noiseValue = (float) noise.Evaluate(x * noiseScale, y * noiseScale, z * noiseScale) /2 + 0.5f;
 
+                var dir = new Vector3(x, y, z) - new Vector3(0.5f, 0.5f, 0.5f);
+                
+                // sub sphere outside
+                var minT0 = middleSphere + sphereWidth / 2 - edgeWidth / 2f;
+                var maxT0 = middleSphere + sphereWidth / 2 + edgeWidth / 2f;
+                var dd0 = Mathf.InverseLerp(minT0, maxT0, dir.magnitude);
+                noiseValue = Mathf.SmoothStep(noiseValue, 0, dd0);
+                
+                // sub sphere inside
+                // minT0 = middleSphere - sphereWidth / 2 - edgeWidth / 2f;
+                // maxT0 = middleSphere - sphereWidth / 2 + edgeWidth / 2f;
+                // dd0 = Mathf.InverseLerp(minT0, maxT0, dir.magnitude);
+                // noiseValue = Mathf.SmoothStep(0, noiseValue, dd0);
+                
                 var rr = noiseValue * (colors.Length);
                 var closestBoundary = (Mathf.RoundToInt(rr));
-                var minT = closestBoundary - threashold / 2f;
-                var maxT = closestBoundary + threashold / 2f;
+                var minT = closestBoundary - edgeWidth / 2f;
+                var maxT = closestBoundary + edgeWidth / 2f;
                 var dd = Mathf.InverseLerp(minT, maxT, rr);
                 var dd2 = Mathf.SmoothStep(0, 1, dd);
-
+                
                 if (closestBoundary > rr)
                 {
                     var ca = colors[(int) rr];
@@ -75,6 +91,23 @@ namespace Volumes.Factories
                     return Color.Lerp(ca, cb, dd2);
                 }
             });
+        }
+        
+        [MenuItem("Factory/White Noise Texture")]
+        public static void WhiteNoiseTexture()
+        {
+            var resolution = 512;
+            var rng = new Random();
+
+            var bytes = new byte[resolution * resolution];
+            rng.NextBytes(bytes);
+            
+            var texture = new Texture2D(resolution, resolution, TextureFormat.Alpha8, false);
+            texture.SetPixelData(bytes, 0);
+            texture.Apply(false);
+
+            string path = Path.Combine(Application.dataPath, "whitenoise.png");
+            File.WriteAllBytes(path, texture.EncodeToPNG());
         }
 
         private delegate T Write<T>(float x, float y, float z);
@@ -95,7 +128,7 @@ namespace Volumes.Factories
             
             var volumePath = Path.Combine(volumesDir, $"{name}.vlm");
             VolumeManager.SaveVolume(volume, volumePath);
-            Debug.Log($"{sw.ElapsedMilliseconds} ms");
+            Debug.Log($"Generating volume took {sw.ElapsedMilliseconds} ms");
         }
 
         private static RawVolume<T> RunVolumeMt<T>(Vector3Int size, Write<T> calllback)
