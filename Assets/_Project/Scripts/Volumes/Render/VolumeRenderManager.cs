@@ -35,6 +35,13 @@ namespace Render
             volumeRender = Instantiate(volumePrefab);
             volumeRender.SetVolume(renderVolumeOct);
             volumeRender.IsGrayscale = volume.Format != VolumeFormat.RGBA32;
+
+            var longestDimensions = Mathf.Max(volume.Width, volume.Height, volume.Depth);
+            volumeRender.transform.localScale = new Vector3(
+                (float) volume.Width / longestDimensions,
+                (float) volume.Height / longestDimensions,
+                (float) volume.Depth / longestDimensions
+            );
             
             OnVolumeLoaded(volumeRender);
             
