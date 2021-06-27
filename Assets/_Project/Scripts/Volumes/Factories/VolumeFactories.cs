@@ -31,9 +31,10 @@ namespace Volumes.Factories
                 return value;
             });
         }
-        
-        [MenuItem("Factory/Noise")]
-        public static void Noise()
+
+
+        [MenuItem("Factory/RedBlueSphere1024")]
+        public static void RedBlueSphere1024()
         {
             var resolution = 1024;
             var noiseScale = 5f;
@@ -52,16 +53,67 @@ namespace Volumes.Factories
                 Color.clear, Color.clear,
             };
 
+            NoiseSphere("RedBlueSphere1024", resolution, noiseScale, edgeWidth, middleSphere, sphereWidth, colors);
+        }
+        
+        [MenuItem("Factory/RedBlueSphere128")]
+        public static void RedBlueSphere128()
+        {
+            var resolution = 128;
+            var noiseScale = 5f;
+            var edgeWidth = 0.1f;
+            var sphereWidth = 0.2f;
+            var middleSphere = 0.5f - sphereWidth / 2;
+            var colorA = Color.red;
+            var colorB = Color.blue;
+            var colorOpacity = 0.01f;
+            var colors = new[]
+            {
+                Color.clear, Color.clear,
+                colorA.SetAlpha(0f), colorA.SetAlpha(colorOpacity),
+                colorB, colorB,
+                colorA.SetAlpha(colorOpacity), colorA.SetAlpha(0f),
+                Color.clear, Color.clear,
+            };
+
+            NoiseSphere("RedBlueSphere128", resolution, noiseScale, edgeWidth, middleSphere, sphereWidth, colors);
+        }
+        
+        [MenuItem("Factory/RedBlueSphere512")]
+        public static void RedBlueSphere512()
+        {
+            var resolution = 512;
+            var noiseScale = 5f;
+            var edgeWidth = 0.1f;
+            var sphereWidth = 0.2f;
+            var middleSphere = 0.5f - sphereWidth / 2;
+            var colorA = Color.red;
+            var colorB = Color.blue;
+            var colorOpacity = 0.01f;
+            var colors = new[]
+            {
+                Color.clear, Color.clear,
+                colorA.SetAlpha(0f), colorA.SetAlpha(colorOpacity),
+                colorB, colorB,
+                colorA.SetAlpha(colorOpacity), colorA.SetAlpha(0f),
+                Color.clear, Color.clear,
+            };
+
+            NoiseSphere("RedBlueSphere512", resolution, noiseScale, edgeWidth, middleSphere, sphereWidth, colors);
+        }
+        
+        private static void NoiseSphere(string name, int resolution, float noiseScale, float edgeWidth, float sphereRadius, float sphereWidth, Color[] colors)
+        {
             var noise = new OpenSimplexNoise();
-            RunVolume("Noise", VolumeFormat.RGBA32, new Vector3Int(resolution, resolution, resolution), (x, y, z) =>
+            RunVolume(name, VolumeFormat.RGBA32, new Vector3Int(resolution, resolution, resolution), (x, y, z) =>
             {
                 var noiseValue = (float) noise.Evaluate(x * noiseScale, y * noiseScale, z * noiseScale) /2 + 0.5f;
 
                 var dir = new Vector3(x, y, z) - new Vector3(0.5f, 0.5f, 0.5f);
                 
                 // sub sphere outside
-                var minT0 = middleSphere + sphereWidth / 2 - edgeWidth / 2f;
-                var maxT0 = middleSphere + sphereWidth / 2 + edgeWidth / 2f;
+                var minT0 = sphereRadius + sphereWidth / 2 - edgeWidth / 2f;
+                var maxT0 = sphereRadius + sphereWidth / 2 + edgeWidth / 2f;
                 var dd0 = Mathf.InverseLerp(minT0, maxT0, dir.magnitude);
                 noiseValue = Mathf.SmoothStep(noiseValue, 0, dd0);
                 
@@ -116,9 +168,6 @@ namespace Volumes.Factories
             Write<T> calllback)
         {
             var sw = Stopwatch.StartNew();
-            var volumesDir = Path.Combine(Application.persistentDataPath, "Volumes");
-            Utils.EnsureDirectory(volumesDir);
-
             var rawVolume = RunVolumeMt(size, calllback);
             
             var clusters = rawVolume.Data.ToOctClusters(size);
@@ -126,8 +175,7 @@ namespace Volumes.Factories
 
             var volume =  new Volume(size.x, size.y, size.z, 0, 1, volumeFormat, packed);
             
-            var volumePath = Path.Combine(volumesDir, $"{name}.vlm");
-            VolumeManager.SaveVolume(volume, volumePath);
+            VolumeManager.SaveVolume(volume, name);
             Debug.Log($"Generating volume took {sw.ElapsedMilliseconds} ms");
         }
 

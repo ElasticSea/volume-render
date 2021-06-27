@@ -498,5 +498,6 @@ MonoBehaviour:
   - VR
   - Import
   - Standard
+  - AR
   panel: {fileID: 4647318212342690976}
   button: {fileID: 4647318212096129663}

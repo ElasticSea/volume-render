@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/_Project/Content/VR.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
+    path: Assets/_Project/AR.unity
+    guid: 6ebbacdbb2b80d34ba511c3ef163fd47
+  - enabled: 1
     path: Assets/_Project/Standard.unity
     guid: cfc087faf08e29843838e94d0b235d50
   m_configObjects:

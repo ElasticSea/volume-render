@@ -14,14 +14,19 @@
                 <ui:Slider name="minClipThreshold" picking-mode="Ignore" label="Clip Minimum Threashold" value="filler text" text="filler text" high-value="1" />
                 <ui:Slider name="maxClipThreshold" picking-mode="Ignore" label="Clip Maximum Threashold" value="filler text" text="Render" high-value="1" />
             </ui:VisualElement>
+            <ui:VisualElement name="cutPanel" style="height: auto; flex-grow: 1; background-color: rgb(210, 210, 210);">
+                <ui:Label text="Cut" display-tooltip-when-elided="true" style="font-size: 18px;" />
+                <ui:Slider name="Progress" picking-mode="Ignore" value="filler text" text="filler text" high-value="1" />
+            </ui:VisualElement>
             <ui:VisualElement name="volumesPanel" style="height: auto; flex-grow: 1; background-color: rgb(210, 210, 210);">
                 <ui:Label text="Volumes" display-tooltip-when-elided="true" style="font-size: 18px;" />
                 <ui:ListView focusable="true" name="volumes" style="flex-grow: 1;" />
                 <ui:Button display-tooltip-when-elided="true" name="loadVolume" text="Load" />
             </ui:VisualElement>
-            <ui:VisualElement name="cutPanel" style="height: auto; flex-grow: 1; background-color: rgb(210, 210, 210);">
-                <ui:Label text="Cut" display-tooltip-when-elided="true" style="font-size: 18px;" />
-                <ui:Slider name="Progress" picking-mode="Ignore" value="filler text" text="filler text" high-value="1" />
+            <ui:VisualElement style="flex-direction: row; flex-grow: 0;">
+                <ui:Button display-tooltip-when-elided="true" text="Download" name="download" style="min-width: 50px;" />
+                <ui:Label picking-mode="Ignore" text="url" name="downloadProgress" style="flex-grow: 0;" />
+                <ui:TextField picking-mode="Ignore" label="Download" value="url" text="url" name="downloadUrl" style="flex-grow: 0;" />
             </ui:VisualElement>
             <ui:Button text="Refresh State" display-tooltip-when-elided="true" name="refreshAll" />
         </ui:VisualElement>
