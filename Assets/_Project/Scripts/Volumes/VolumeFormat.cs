@@ -2,11 +2,11 @@ namespace Volumes
 {
     public enum VolumeFormat
     {
-        Gray32,
-        Gray16,
-        Gray8,
-        RGBA64,
-        RGBA32,
-        RGBA16,
+        Gray8 = 0,
+        Gray16 = 1,
+        Gray32 = 2,
+        RGBA16 = 3,
+        RGBA32 = 4,
+        RGBA64 = 5,
     }
 }
