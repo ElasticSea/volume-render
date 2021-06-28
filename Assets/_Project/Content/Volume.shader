@@ -18,6 +18,7 @@ Shader "Volume"
         Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
         Pass
         {
+        
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -40,7 +41,6 @@ Shader "Volume"
                 float4 vertex : SV_POSITION;
                 float4 cameraLocalPos : TEXCOORD1;
                 float4 vertexLocalPos : TEXCOORD2;
-                float4 screenPos : TEXCOORD3;
             };
             
 #ifdef _OCTVOLUME_OFF
@@ -94,8 +94,6 @@ Shader "Volume"
                 }
             }
 #endif
-            //uniform sampler2D _RandomNoise;
-            //uniform float _RandomOffset;
             uniform float _StepDistance;
             uniform float _ClipMin;
             uniform float _ClipMax;
@@ -125,7 +123,6 @@ Shader "Volume"
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.vertexLocalPos = v.vertex;
                 o.cameraLocalPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0));     
-                o.screenPos = ComputeScreenPos(o.vertex);
                 return o;
             }
 
@@ -172,7 +169,7 @@ Shader "Volume"
                 
                 float dstTravelled = 0.0;
                 float4 color = 0;
-                float4 samplePosition = rayOrigin; 
+                float3 samplePosition = rayOrigin; 
                 
                 [loop]
                 while (dstTravelled < dstInsideBox) {
