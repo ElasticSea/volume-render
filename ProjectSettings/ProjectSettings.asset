@@ -12,8 +12,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
-  productName: brain-volume-demo
+  companyName: Elastic Sea
+  productName: volume-render
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -128,7 +128,9 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleVersion: 0.1
-  preloadedAssets: []
+  preloadedAssets:
+  - {fileID: 11400000, guid: 3b15e704b375d394f80c2863f6af5d02, type: 2}
+  - {fileID: 3670829766706574099, guid: 79cf0fecd627b3d4980396dd444babf9, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -147,7 +149,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.DefaultCompany.brainvolumedemo
-    Standalone: com.DefaultCompany.brain-volume-demo
+    Standalone: com.ElasticSea.volume-render
     iPhone: com.DefaultCompany.brain-volume-demo
   buildNumber:
     Standalone: 0
