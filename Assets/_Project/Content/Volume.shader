@@ -169,18 +169,17 @@ Shader "Volume"
                 
                 float dstTravelled = 0.0;
                 float4 color = 0;
-                float3 samplePosition = rayOrigin; 
                 
                 [loop]
                 while (dstTravelled < dstInsideBox) {
-                    samplePosition = entryPoint + rayDirection * dstTravelled;
+                    float3 samplePosition = entryPoint + rayDirection * dstTravelled;
                     
 #ifdef _COLOR_ON
-                    float4 sampleColor = SampleVolume(rayOrigin);
+                    float4 sampleColor = SampleVolume(samplePosition);
 #endif
                     
 #ifdef _COLOR_OFF
-                    float sampledValue = SampleVolume(rayOrigin).r;
+                    float sampledValue = SampleVolume(samplePosition).r;
                     float4 sampleColor = float4(sampledValue, sampledValue, sampledValue, sampledValue);
 #endif
 
