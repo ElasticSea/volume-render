@@ -59,9 +59,9 @@ namespace Render
             }
         };
 
-        private static readonly RenderPreset High = new RenderPreset
+        private static readonly RenderPreset Medium = new RenderPreset
         {
-            Name = "High",
+            Name = "Medium",
             Settings = new RenderSettings
             {
                 Alpha = 2.8f,
@@ -69,10 +69,21 @@ namespace Render
                 StepDistance = 0.0016f
             }
         };
-
-        private static readonly RenderPreset Ultra = new RenderPreset
+        
+        private static readonly RenderPreset High = new RenderPreset
         {
-            Name = "Ultra",
+            Name = "High",
+            Settings = new RenderSettings
+            {
+                Alpha = 1.2f,
+                AlphaThreshold = 0.995f,
+                StepDistance = 0.0006f
+            }
+        };
+
+        private static readonly RenderPreset VeryHigh = new RenderPreset
+        {
+            Name = "VeryHigh",
             Settings = new RenderSettings
             {
                 Alpha = 0.4f,
@@ -81,18 +92,18 @@ namespace Render
             }
         };
 
-        private static readonly RenderPreset Test = new RenderPreset
+        private static readonly RenderPreset Ultra = new RenderPreset
         {
-            Name = "Test",
+            Name = "Ultra",
             Settings = new RenderSettings
             {
                 Alpha = 0.1f,
-                AlphaThreshold = 1f,
+                AlphaThreshold = 0.9995f,
                 StepDistance = 0.00005f
             }
         };
 
-        private IEnumerable<RenderPreset> renderPresets = new[] {Low, High, Ultra, Test};
+        private IEnumerable<RenderPreset> renderPresets = new[] {Low, Medium, High, VeryHigh, Ultra};
         private VolumeRender volumeRender;
         private RuntimeVolume volume;
 
