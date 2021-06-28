@@ -2,8 +2,6 @@ Shader "Volume"
 {
     Properties
     {
-        //[NoScaleOffset] _RandomNoise ("Random Noise", 2D) = "gray" {}
-        //_RandomOffset ("Random Offset", float) = 0.01
         _Alpha ("Alpha", float) = 0.01
         _AlphaThreshold ("Alpha Threshold", float) = 0.95
         _StepDistance ("Step Distance", float) = 0.01
@@ -21,8 +19,6 @@ Shader "Volume"
         Pass
         {
             CGPROGRAM
-            #include "UnityCG.cginc"
-
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile _CLIP_OFF _CLIP_ON
@@ -176,13 +172,11 @@ Shader "Volume"
                 
                 float dstTravelled = 0.0;
                 float4 color = 0;
+                float4 samplePosition = rayOrigin; 
                 
-                //float2 screenUV = i.screenPos.xy / i.screenPos.w;
-                //float randomOffset = tex2D(_RandomNoise, screenUV).a * _RandomOffset;
-
                 [loop]
                 while (dstTravelled < dstInsideBox) {
-                    rayOrigin = entryPoint + rayDirection * dstTravelled;//(dstTravelled + randomOffset);
+                    samplePosition = entryPoint + rayDirection * dstTravelled;
                     
 #ifdef _COLOR_ON
                     float4 sampleColor = SampleVolume(rayOrigin);
@@ -196,7 +190,6 @@ Shader "Volume"
 #ifdef _CLIP_ON
                     if(_ClipMin <= sampleColor.a && sampleColor.a <= _ClipMax){
 #endif
-                        // Blend Color
                         sampleColor.a *= _Alpha;
                         color = BlendUnder(color, sampleColor);
                         
