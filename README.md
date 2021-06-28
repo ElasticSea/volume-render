@@ -1,11 +1,31 @@
 # Volume Render
 Visualizing volumetric data in VR and AR
 
+## How to use
+
+### Import volume
+1) Start `_Project/Import` scene.
+2) Choose a volume name.
+2) Select volume source. *(only `.nii` float volumes are supported)*
+3) Select volume format. For example Gray8 for grayscale and RGBA32 for color.
+4) Click 'Import'.
+
+### Use existing volume
+TODO...
+
+### Render volume in VR
+1) Start `_Project/VR` scene.
+2) Select volume in volumes list.
+3) Click 'Load'.
+4) Put on your VR headset.
+5) Holding the right grip button, you can cut the volume.
+6) Pressing the primary button on right controller, you toggle between render quality modes.
+
 ## Rendering
 
-The volume occupies a space of ordinary cube with (1,1,1) length at (0,0,0). The faces of the cube are inverted so its possible to move the camera inside the cube.
+The volume occupies a space of ordinary unity cube with (1,1,1) length at (0,0,0). The faces of the cube are inverted so its possible to move the camera inside the cube and render the volume.
 
-In the framgnet shader we will create a ray based on the local position and direction of the camera. Raycasting the cube we get the distance to travel inside the volume.
+In the fragment shader we will create a ray based on the local position and direction of the camera. Raycasting the cube we get the distance to travel inside the volume.
 
 Cutting the volume into discreat steps we will travel the volume until we cover the distance, blending the sampled color at each step.
 
@@ -84,23 +104,11 @@ Formats:
 The rest of the file are clusters of voxels saved in sequence
 
 
-## Existing datasets
+## Volumes library
 
-100micron brain scan at 1263x1651x1148 at 8bit per voxel 2.23 GiB
+- 100micron brain scan at 1263x1651x1148 at 8bit per voxel 2.23 GiB
 https://xrvolumerender.azureedge.net/volumes/brain.vlm
 
-
-
-brain scan source:
-https://datadryad.org/stash/dataset/doi:10.5061/dryad.119f80q
-
-### Brain
-
-https://xrvolumerender.azureedge.net/volumes/brain.vlm
-
-https://xrvolumerender.blob.core.windows.net/volumes/brain.vlm
-
-## Source Data
-
-You can find source data-set of the 100micron brain scan here:
+## Source Datasets
+- 100micron brain scan source:
 https://datadryad.org/stash/dataset/doi:10.5061/dryad.119f80q
