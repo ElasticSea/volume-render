@@ -34,14 +34,13 @@ fixed4 frag (v2f i) : SV_Target
     
     float dstTravelled = 0.0;
     float4 color = 0;
-    float4 samplePosition = rayOrigin; 
     
     // Step through the volume in small steps and blend the colors
     [loop]
     while (dstTravelled < dstInsideBox) {
-        samplePosition = entryPoint + rayDirection * dstTravelled;
+        float3 samplePosition = entryPoint + rayDirection * dstTravelled;
         
-        float4 sampleColor = SampleVolume(rayOrigin);
+        float4 sampleColor = SampleVolume(samplePosition);
 
         sampleColor.a *= _Alpha;
         color = BlendUnder(color, sampleColor);
