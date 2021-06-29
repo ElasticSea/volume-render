@@ -23,7 +23,7 @@ TODO...
 
 ## Rendering
 
-The volume occupies a space of ordinary unity cube with (1,1,1) length at (0,0,0). The faces of the cube are inverted so its possible to move the camera inside the cube and render the volume.
+The volume occupies a space of ordinary unity cube with `(1, 1, 1)` length at `(0, 0, 0)`. The faces of the cube are inverted so its possible to move the camera inside the cube and render the volume.
 
 In the fragment shader we will create a ray based on the local position and direction of the camera. Raycasting the cube we get the distance to travel inside the volume.
 
