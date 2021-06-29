@@ -1,4 +1,4 @@
-![brain slice](https://user-images.githubusercontent.com/36990593/123840140-47110780-d90e-11eb-9b7d-1a2ad79e3f1c.png)
+![brain slice](https://user-images.githubusercontent.com/36990593/123840410-935c4780-d90e-11eb-95c1-f0c49d661f2f.png)
 # Volume Render
 Visualizing volumetric data in VR and AR!
 
