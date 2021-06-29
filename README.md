@@ -1,6 +1,6 @@
-![brain slice](https://user-images.githubusercontent.com/36990593/123810139-787bda00-d8f2-11eb-88d7-28f7e5a5f63b.png)
+![brain slice](https://user-images.githubusercontent.com/36990593/123840140-47110780-d90e-11eb-9b7d-1a2ad79e3f1c.png)
 # Volume Render
-Visualizing volumetric data in VR and AR
+Visualizing volumetric data in VR and AR!
 
 ## How to use
 
