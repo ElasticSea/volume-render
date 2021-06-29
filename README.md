@@ -24,12 +24,15 @@ TODO...
 
 ## Rendering
 
-The volume occupies a space of ordinary unity cube with `(1, 1, 1)` length at `(0, 0, 0)`. The faces of the cube are inverted so its possible to move the camera inside the cube and render the volume.
+The volume occupies a space cube with size `(1, 1, 1)` at position `(0, 0, 0)`. The faces of the cube are inverted so its possible to move the camera inside the cube and render the volume.
 
 In the fragment shader we will create a ray based on the local position and direction of the camera. Raycasting the cube we get the distance to travel inside the volume.
 
-Cutting the volume into discreat steps we will travel the volume until we cover the distance, blending the sampled color at each step.
+In order to achieve the cutting effect, the ray is clamped to the plane defined by `_CutOrigin` and `_CutNormal`
 
+Traversing the volume in discreat steps until we cover the distance, blending the sampled color at each step.
+
+### Shader
 ```glsl
 v2f vert (appdata v)
 {
@@ -53,6 +56,12 @@ fixed4 frag (v2f i) : SV_Target
     float3 entryPoint = rayOrigin + rayDirection * dstToBox;
     float3 exitPoint = entryPoint + rayDirection * dstInsideBox;
     
+    // Clamp ray to plane
+    exitPoint = ClampRayToPlane(entryPoint, exitPoint, _CutOrigin, _CutNormal);
+    entryPoint = ClampRayToPlane(exitPoint, entryPoint, _CutOrigin, _CutNormal);
+    dstToBox = length(entryPoint - rayOrigin);
+    dstInsideBox = length(exitPoint - entryPoint);
+
     float dstTravelled = 0.0;
     float4 color = 0;
     
@@ -72,9 +81,20 @@ fixed4 frag (v2f i) : SV_Target
     return color;
 }
 ```
+### Params
+| Type | Name | Description |
+|-|-|-|
+| sampler3D | _Volume | Used only for smaller volumes, single volume texture up to `2048x2048x2048` and `2GB` |
+| sampler3D | _Volume000-111 | Used only for larger volumes split to `8` textures up to `4096x4096x4096` and `16GB` |
+| float | _StepDistance | Distance betweens steps while traversing the volume, lower number takes samples faster |
+| float | _ClipMin | Voxels with alpha below this threshold are discarted |
+| float | _ClipMax | Voxels with alpha above this threshold are discarted |
+| float | _Alpha | Each voxel's alpha is multiplied by this, change opacity of the resulting render |
+| float | _AlphaThreshold | When resulting color's alpha is higher than this threshold the ray is stopped and program exists saving compute time |
+| float3 | _CutNormal | Normal of plane that cuts the volume |
+| float3 | _CutOrigin | Origin of plane that cuts the volume |
 
-Volumes are rendered using ray-marching technique where we cast a ray for each pixel of the volume on screen and accumualate color from the interects
-..insert sample shader code
+TODO presets with images
 
 ## Format
 
