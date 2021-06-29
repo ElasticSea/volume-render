@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.IO;
+using ElasticSea.Framework.Util;
 using UnityEngine;
 
-public class TryScreenshot : MonoBehaviour
+public class CaptureFootage : MonoBehaviour
 {
     [SerializeField] private Camera camera;
     [SerializeField] private ReplayPlayer player;
@@ -11,8 +12,9 @@ public class TryScreenshot : MonoBehaviour
     [SerializeField] private int width = 3840;
     [SerializeField] private int height = 2160;
 
-    public void Make()
+    public void Start()
     {
+        player.TimeScale = 0;
         StartCoroutine(Render());
     }
 
@@ -21,6 +23,9 @@ public class TryScreenshot : MonoBehaviour
         var rt = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
         var tex = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
 
+        var folderPath = Path.Combine(Application.persistentDataPath, "export");
+        Utils.EnsureDirectory(folderPath, true);
+        
         for (var i = 0; i < frames; i++)
         {
             camera.targetTexture = rt;
@@ -30,7 +35,7 @@ public class TryScreenshot : MonoBehaviour
             RenderTexture.active = rt;
             tex.ReadPixels(new Rect(0, 0, RenderTexture.active.width, RenderTexture.active.height), 0, 0);
 
-            var pngPath = Path.Combine(Application.persistentDataPath, $"frame_{player.Frame}.png");
+            var pngPath = Path.Combine(folderPath, $"frame_{player.Frame}.png");
             var png = tex.EncodeToPNG();
             File.WriteAllBytes(pngPath, png);
 

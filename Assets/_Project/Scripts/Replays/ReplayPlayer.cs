@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Replays;
 using UnityEngine;
 
@@ -6,8 +7,8 @@ public class ReplayPlayer : MonoBehaviour
 {
     [SerializeField] private float timeScale = 1;
 
-    private List<Snapshot> snapshots;
-    private List<Transform> transforms;
+    private List<Snapshot> snapshots = new List<Snapshot>();
+    private List<Transform> transforms = new List<Transform>();
 
     public float TimeScale
     {
@@ -20,9 +21,12 @@ public class ReplayPlayer : MonoBehaviour
         get => frame;
         set
         {
-            frame = Mathf.Clamp(value, 1, snapshots.Count - 1);
-            time = snapshots[frame].Time;
-            SetFrame();
+            if (snapshots.Any())
+            {
+                frame = Mathf.Clamp(value, 0, snapshots.Count - 1);
+                time = snapshots[frame].Time;
+                SetFrame();
+            }
         }
     }
 

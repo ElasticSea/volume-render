@@ -162,7 +162,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6256258464680041251}
-  - {fileID: 7588433378182995697}
+  - {fileID: 4224455886172037704}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -183,7 +183,7 @@ MonoBehaviour:
   m_TrackingOriginMode: 1
   m_TrackingSpace: 0
   m_CameraYOffset: 1.36144
---- !u!1001 &1537904081676796223
+--- !u!1001 &5095950873406684550
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -240,8 +240,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6c4a2a4cf2002c44b546b0af50f295f, type: 3}
---- !u!4 &7588433378182995697 stripped
+--- !u!4 &4224455886172037704 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8941963507359326158, guid: d6c4a2a4cf2002c44b546b0af50f295f, type: 3}
-  m_PrefabInstance: {fileID: 1537904081676796223}
+  m_PrefabInstance: {fileID: 5095950873406684550}
   m_PrefabAsset: {fileID: 0}

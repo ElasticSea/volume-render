@@ -3,17 +3,22 @@ using UnityEngine;
 
 namespace Replays.Editor
 {
-    [CustomEditor(typeof(ReplayRecorder))]
+    [CustomEditor(typeof(SaveVRSession))]
     public class ReplayRecorderEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            var replayRecorder = target as ReplayRecorder;
+            var replayRecorder = target as SaveVRSession;
             
-            if (GUILayout.Button("Save"))
+            if (GUILayout.Button("StartRecording"))
             {
-                replayRecorder.Save();
+                replayRecorder.StartRecording();
+            };
+            
+            if (GUILayout.Button("StopRecording"))
+            {
+                replayRecorder.StopRecording();
             };
         }
     }

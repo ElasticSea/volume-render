@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using _Project.Scripts.Gameplay.Replays;
@@ -10,26 +8,26 @@ using UnityEngine;
 public class SaveVRSession : MonoBehaviour
 {
     [SerializeField] private Transform[] transforms;
-    
+
+    [SerializeField] private ReplayRecorder replayRecorder;
     [SerializeField] private string replayName;
-    [SerializeField] private float replayLengthSeconds = 10;
-    private bool save = true;
-    private ReplayRecorder replayRecorder;
 
     void Start()
     {
-        replayRecorder = this.gameObject.AddComponent<ReplayRecorder>();
         replayRecorder.Setup(transforms.ToList());
+        replayRecorder.enabled = false;
+    }
+    
+    public void StartRecording()
+    {
+        replayRecorder.Clear();
+        replayRecorder.enabled = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StopRecording()
     {
-        if (save && Time.time > replayLengthSeconds)
-        {
-            Save();
-            save = false;
-        }
+        replayRecorder.enabled = false;
+        Save();
     }
 
     private void Save()

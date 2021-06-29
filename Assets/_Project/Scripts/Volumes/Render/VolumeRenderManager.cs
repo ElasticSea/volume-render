@@ -144,5 +144,13 @@ namespace Render
             volumeRender.AlphaThreshold = present.Settings.AlphaThreshold;
             volumeRender.StepDistance = present.Settings.StepDistance * maxL;
         }
+
+        public void SetCutPlane(Vector3 position, Vector3 normal)
+        {
+            if (volumeRender)
+            {
+                volumeRender.SetCutPlane(position, normal);
+            }
+        }
     }
 }

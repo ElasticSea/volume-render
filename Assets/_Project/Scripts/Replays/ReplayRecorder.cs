@@ -8,9 +8,7 @@ using UnityEngine;
 
 public class ReplayRecorder : MonoBehaviour
 {
-    [SerializeField] private Transform simulation;
-
-    public List<Snapshot> Snapshots { get; } = new List<Snapshot>();
+    public List<Snapshot> Snapshots { get; private set; } = new List<Snapshot>();
     private List<Transform> transforms;
 
     public void Setup(List<Transform> transforms)
@@ -44,18 +42,8 @@ public class ReplayRecorder : MonoBehaviour
         Snapshots.Add(snapshot);
     }
 
-    public void Save()
+    public void Clear()
     {
-        var replay = new Replay
-        {
-            Transforms = transforms.Select(t => t.name).ToArray(),
-            Snapshots = Snapshots.ToList()
-        };
-
-        var bytes = ReplaySeriliazer.Write(replay);
-
-        var file = new FileInfo(Path.Combine(Application.persistentDataPath, "Replays", "replayTest.rpl"));
-        Utils.EnsureDirectory(file.Directory.FullName);
-        File.WriteAllBytes(file.FullName, bytes);
+        Snapshots = new List<Snapshot>();
     }
 }
