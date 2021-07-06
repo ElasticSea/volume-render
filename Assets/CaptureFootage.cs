@@ -7,6 +7,7 @@ using UnityEngine;
 public class CaptureFootage : MonoBehaviour
 {
     [SerializeField] private Camera camera;
+    [SerializeField] private string path = "export";
     [SerializeField] private ReplayPlayer player;
     [SerializeField] private int frames = 10;
     [SerializeField] private int width = 3840;
@@ -23,7 +24,7 @@ public class CaptureFootage : MonoBehaviour
         var rt = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
         var tex = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
 
-        var folderPath = Path.Combine(Application.persistentDataPath, "export");
+        var folderPath = Path.Combine(Application.persistentDataPath, path);
         Utils.EnsureDirectory(folderPath, true);
         
         for (var i = 0; i < frames; i++)

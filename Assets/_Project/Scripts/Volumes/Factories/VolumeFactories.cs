@@ -17,6 +17,7 @@ namespace Volumes.Factories
 
 #if UNITY_EDITOR
         [MenuItem("Factory/Perfect Sphere")]
+#endif
         public static void PerfectSphere()
         {
             var size = 1024;
@@ -33,7 +34,35 @@ namespace Volumes.Factories
         }
 
 
+#if UNITY_EDITOR
+        [MenuItem("Factory/RedBlueSphere1536")]
+#endif
+        public static void RedBlueSphere1536()
+        {
+            var resolution = 1536;
+            var noiseScale = 5f;
+            var edgeWidth = 0.1f;
+            var sphereWidth = 0.2f;
+            var middleSphere = 0.5f - sphereWidth / 2;
+            var colorA = Color.red;
+            var colorB = Color.blue;
+            var colorOpacity = 0.01f;
+            var colors = new[]
+            {
+                Color.clear, Color.clear,
+                colorA.SetAlpha(0f), colorA.SetAlpha(colorOpacity),
+                colorB, colorB,
+                colorA.SetAlpha(colorOpacity), colorA.SetAlpha(0f),
+                Color.clear, Color.clear,
+            };
+
+            NoiseSphere("RedBlueSphere1536", resolution, noiseScale, edgeWidth, middleSphere, sphereWidth, colors);
+        }
+
+
+#if UNITY_EDITOR
         [MenuItem("Factory/RedBlueSphere1024")]
+#endif
         public static void RedBlueSphere1024()
         {
             var resolution = 1024;
@@ -55,8 +84,10 @@ namespace Volumes.Factories
 
             NoiseSphere("RedBlueSphere1024", resolution, noiseScale, edgeWidth, middleSphere, sphereWidth, colors);
         }
-        
+       
+#if UNITY_EDITOR 
         [MenuItem("Factory/RedBlueSphere128")]
+#endif
         public static void RedBlueSphere128()
         {
             var resolution = 128;
@@ -79,7 +110,9 @@ namespace Volumes.Factories
             NoiseSphere("RedBlueSphere128", resolution, noiseScale, edgeWidth, middleSphere, sphereWidth, colors);
         }
         
+#if UNITY_EDITOR
         [MenuItem("Factory/RedBlueSphere512")]
+#endif
         public static void RedBlueSphere512()
         {
             var resolution = 512;
@@ -145,7 +178,9 @@ namespace Volumes.Factories
             });
         }
         
+#if UNITY_EDITOR
         [MenuItem("Factory/White Noise Texture")]
+#endif
         public static void WhiteNoiseTexture()
         {
             var resolution = 512;
@@ -169,19 +204,50 @@ namespace Volumes.Factories
         {
             var sw = Stopwatch.StartNew();
             var rawVolume = RunVolumeMt(size, calllback);
-            
             var clusters = rawVolume.Data.ToOctClusters(size);
+            Clear(rawVolume.Data);
+            ForceRamWipe();
             var packed = clusters.PackClusters(volumeFormat, true);
+            foreach (var cluster in clusters)
+            {
+                Clear(cluster.Data);
+            }
+            ForceRamWipe();
 
             var volume =  new Volume(size.x, size.y, size.z, 0, 1, volumeFormat, packed);
             
             VolumeManager.SaveVolume(volume, name);
+            foreach (var cluster in packed)
+            {
+                Clear(cluster.Data);
+            }
+            ForceRamWipe();
             Debug.Log($"Generating volume took {sw.ElapsedMilliseconds} ms");
+        }
+
+        // Large byte arrays have problems to be deallocated even when bigarray is set to null
+        private static void Clear<T>(BigArray<T> rawVolumeData)
+        {
+            var dd = rawVolumeData.GetType().GetField("Data").GetValue(rawVolumeData) as T[][];
+            for (var i = 0; i < dd.Length; i++)
+            {
+                dd[i] = null;
+            }
+        }
+        
+        private static void ForceRamWipe()
+        {
+            // Attempt to force the GC release LOH memory and return the memory to OS
+            // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
+            for (var i = 0; i < 16; i++)
+            {
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+            }
         }
 
         private static RawVolume<T> RunVolumeMt<T>(Vector3Int size, Write<T> calllback)
         {
-            var voxels = size.x * size.y * size.z;
+            var voxels = (long) size.x * size.y * size.z;
             
             var chunkSize = Mathf.CeilToInt((float) voxels / Environment.ProcessorCount);
 
@@ -225,6 +291,5 @@ namespace Volumes.Factories
         }
         
         
-#endif
     }
 }

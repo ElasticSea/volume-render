@@ -344,6 +344,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   position: {x: 0, y: 2, z: 0}
   manager: {fileID: 1770833861}
+--- !u!114 &439909215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439909213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35694614395accb45b3f44806896969d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manager: {fileID: 1770833861}
+  volumeName: brain_100micron_8bit
+  presetName: high
 --- !u!1 &484221656 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6256258464567610437, guid: 96fd34aa79989a1469068f2f37223e7d, type: 3}

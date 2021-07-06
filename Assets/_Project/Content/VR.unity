@@ -123,33 +123,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &484221656 stripped
+--- !u!1 &237750459
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 6256258464567610437, guid: 96fd34aa79989a1469068f2f37223e7d, type: 3}
-  m_PrefabInstance: {fileID: 6256258464154935604}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &484221657
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 237750461}
+  - component: {fileID: 237750460}
+  m_Layer: 0
+  m_Name: Cut
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &237750460
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 484221656}
+  m_GameObject: {fileID: 237750459}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7aee4037ee54af478f7413561882b0d, type: 3}
+  m_Script: {fileID: 11500000, guid: 8bab42dbd93e445458981f0487a56c7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 484221659}
-  player: {fileID: 0}
-  frames: 3000
-  width: 7680
-  height: 4320
---- !u!20 &484221659 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 6256258464567610439, guid: 96fd34aa79989a1469068f2f37223e7d, type: 3}
-  m_PrefabInstance: {fileID: 6256258464154935604}
+  vrm: {fileID: 1770833861}
+--- !u!4 &237750461
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 237750459}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,7 +477,7 @@ PrefabInstance:
     - target: {fileID: 434826256199504827, guid: baa7e2bb55612f440aa72536180dd530, type: 3}
       propertyPath: hand
       value: 
-      objectReference: {fileID: 4865306449200570381}
+      objectReference: {fileID: 0}
     - target: {fileID: 434826256199504828, guid: baa7e2bb55612f440aa72536180dd530, type: 3}
       propertyPath: m_Name
       value: Volume Render Manager
@@ -620,40 +637,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d816ace8d7068448aec5344c3a500c3, type: 3}
---- !u!1 &4865306449200570381 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2655417623448114076, guid: 96fd34aa79989a1469068f2f37223e7d, type: 3}
-  m_PrefabInstance: {fileID: 6256258464154935604}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &4865306449200570382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4865306449200570381}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42e1abe3f3e77a44490563f8126880b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isRightController: 1
-  manager: {fileID: 1770833861}
---- !u!114 &4865306449200570384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4865306449200570381}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bab42dbd93e445458981f0487a56c7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isRightController: 1
-  vrm: {fileID: 1770833861}
-  sliceWhenHeld: 1
 --- !u!1001 &6256258464154935604
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -664,6 +647,14 @@ PrefabInstance:
     - target: {fileID: 2655417623448114076, guid: 96fd34aa79989a1469068f2f37223e7d, type: 3}
       propertyPath: m_Name
       value: Slice Hand
+      objectReference: {fileID: 0}
+    - target: {fileID: 4830233878036066741, guid: 96fd34aa79989a1469068f2f37223e7d, type: 3}
+      propertyPath: slice
+      value: 
+      objectReference: {fileID: 237750460}
+    - target: {fileID: 4830233878036066741, guid: 96fd34aa79989a1469068f2f37223e7d, type: 3}
+      propertyPath: syncAlways
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6256258464567610439, guid: 96fd34aa79989a1469068f2f37223e7d, type: 3}
       propertyPath: m_ClearFlags

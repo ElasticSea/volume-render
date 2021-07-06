@@ -8,14 +8,15 @@ public class SliceHandSync : MonoBehaviour
 {
     [SerializeField] private bool isRightController;
     [SerializeField] private VolumeSlice slice;
+    [SerializeField] private bool syncAlways = false;
 
     private void Update()
     {
         var orientationCharacteristics = isRightController ? InputDeviceCharacteristics.Right : InputDeviceCharacteristics.Left;
         var controllerCharacteristics = orientationCharacteristics | InputDeviceCharacteristics.Controller;
-        var isHeld = controllerCharacteristics.GetDevice().TryGetFeatureValue(CommonUsages.trigger, out var heldValue) && heldValue > 0.7f;
+        var isHeld = controllerCharacteristics.GetDevice().TryGetFeatureValue(CommonUsages.grip, out var heldValue) && heldValue > 0.7f;
 
-        if (isHeld)
+        if (syncAlways || isHeld)
         {
             slice.transform.CopyWorldFrom(transform);
         }
