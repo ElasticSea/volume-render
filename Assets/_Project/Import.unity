@@ -352,7 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d83b2d5e7675d74584c43efba024b64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sourcePath: E:\Brain\Acquired_FA25_downsampled_200um.nii
+  sourcePath: C:\Shared\Acquired_FA25_100um.nii
   volumeName: volume
   channelDepth: 2
   multithreaded: 1
