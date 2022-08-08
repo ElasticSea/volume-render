@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Standard.unity
     guid: cfc087faf08e29843838e94d0b235d50
+  - enabled: 1
+    path: Assets/_Project/Flat Preview.unity
+    guid: b16cbe6ce2e143248b57fa8abc3d8e8e
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 3b15e704b375d394f80c2863f6af5d02, type: 2}
     Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: 0dd497794a2410747bc1e1311224cf3b, type: 2}
