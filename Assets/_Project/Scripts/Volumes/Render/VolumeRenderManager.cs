@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ElasticSea.Framework.Extensions;
 using UnityEngine;
@@ -13,7 +14,30 @@ namespace Render
 
         public event Action<VolumeRender> OnVolumeLoaded = render => { };
 
-        public void LoadVolume(RuntimeVolume volume)
+        public VolumeRender LoadVolume(VolumeSource volumeSource)
+        {
+            using (var stream = File.OpenRead(volumeSource.FilePath))
+            {
+                var volume = VolumeManager.LoadRuntimeVolume(stream);
+                var volumeRender = LoadVolume(volume);
+                // Attempt to force the GC release LOH memory and return the memory to OS
+                // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
+                for (var i = 0; i < 16; i++)
+                {
+                    GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+                }
+                // Attempt to force the GC release LOH memory and return the memory to OS
+                // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
+                for (var i = 0; i < 16; i++)
+                {
+                    GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+                }
+
+                return volumeRender;
+            }
+        }
+        
+        public VolumeRender LoadVolume(RuntimeVolume volume)
         {
             if (volumeRender)
             {
@@ -46,6 +70,8 @@ namespace Render
             OnVolumeLoaded(volumeRender);
             
             ApplyPreset(High);
+
+            return volumeRender;
         }
 
         private static readonly RenderPreset Low = new RenderPreset

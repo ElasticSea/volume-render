@@ -14,23 +14,7 @@ namespace Volumes.Ui
 
         public void LoadVolume(VolumeSource volumeSource)
         {
-            using (var stream = File.OpenRead(volumeSource.FilePath))
-            {
-                var volume = VolumeManager.LoadRuntimeVolume(stream);
-                volumeRenderManager.LoadVolume(volume);
-                // Attempt to force the GC release LOH memory and return the memory to OS
-                // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
-                for (var i = 0; i < 16; i++)
-                {
-                    GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
-                }
-                // Attempt to force the GC release LOH memory and return the memory to OS
-                // Running GC.Collect one or twice does not seem to be enough trigger the memory return to OS
-                for (var i = 0; i < 16; i++)
-                {
-                    GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
-                }
-            }
+            volumeRenderManager.LoadVolume(volumeSource);
         }
     }
 }

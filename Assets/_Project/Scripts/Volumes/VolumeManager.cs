@@ -14,13 +14,18 @@ namespace Volumes
             {
                 foreach (var vlmFile in Directory.EnumerateFiles(path, "*.vlm", SearchOption.AllDirectories))
                 {
-                    var volume = LoadVolumeMetadata(vlmFile);
-                    var voluemSource = new VolumeSource();
-                    voluemSource.FilePath = vlmFile;
-                    voluemSource.Volume = volume;
-                    yield return voluemSource;
+                    yield return GetVolume(vlmFile);
                 }
             }
+        }
+
+        public static VolumeSource GetVolume(string path)
+        {
+            var volume = LoadVolumeMetadata(path);
+            var volumeSource = new VolumeSource();
+            volumeSource.FilePath = path;
+            volumeSource.Volume = volume;
+            return volumeSource;
         }
 
         public static Volume LoadVolumeMetadata(string path)
