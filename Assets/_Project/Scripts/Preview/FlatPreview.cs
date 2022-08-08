@@ -16,6 +16,7 @@ namespace Preview
         [SerializeField] private string volumePath;
         [Range(0, 1)]
         [SerializeField] private float cut = 0;
+        [SerializeField] private int skipFrames = 0;
 
         [SerializeField] private VolumeRenderManager volumeRenderManager;
         
@@ -92,7 +93,7 @@ namespace Preview
             var framesPerSecond = 60;
             var frames = (int) (seconds * framesPerSecond);
 
-            for (var i = 0; i < frames; i++)
+            for (var i = skipFrames; i < frames; i++)
             {
                 var delta = (float) i / frames;
                 Position(delta);
