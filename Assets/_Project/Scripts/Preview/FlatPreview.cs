@@ -27,6 +27,8 @@ namespace Preview
             var volumeSource = VolumeManager.GetVolume(volumePath);
             volumeRender = volumeRenderManager.LoadVolume(volumeSource);
             volumeRender.Alpha = 1f;
+            volumeRender.StepDistance = 0.00025f;
+            volumeRender.AlphaThreshold = 1f;
             volumeRender.transform.rotation = Quaternion.Euler(90, 0, -90);
 
             var bounds = volumeRender.GetComponent<Renderer>().bounds;
