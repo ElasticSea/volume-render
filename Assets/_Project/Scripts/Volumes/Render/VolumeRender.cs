@@ -163,7 +163,7 @@ namespace Render
         public void SetCutPlane(Vector3 position, Vector3 normal)
         {
             var localPos = transform.InverseTransformPoint(position);
-            var localRotationWithoutScale = transform.InverseTransformDirection(normal);
+            var localRotationWithoutScale = transform.localToWorldMatrix.transpose.MultiplyVector(normal);
 
             material.SetVector("_CutOrigin", localPos);
             material.SetVector("_CutNormal", localRotationWithoutScale);
