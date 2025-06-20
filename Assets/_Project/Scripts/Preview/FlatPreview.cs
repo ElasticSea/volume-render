@@ -63,7 +63,7 @@ namespace Preview
         {
             Renderdd(4096, "temp.png");
         }
-
+        
         private void Renderdd(int imageSize, string imageName)
         {
             var size = volumeRender.GetComponent<Renderer>().bounds.size;
@@ -73,7 +73,8 @@ namespace Preview
             print($"{imageName}: height:{height} x width:{width}");
 
             var rt = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
-            var tex = camera.RenderToTexture(rt);
+            var tex = RenderCameraToTexture(camera, rt);
+
             var path = Path.Combine(Application.persistentDataPath, imageName);
             new FileInfo(path).Directory.Create();
             var bytes = tex.EncodeToPNG();
@@ -82,6 +83,27 @@ namespace Preview
             camera.targetTexture = null;
             Destroy(rt);
             Destroy(tex);
+        }
+
+        private Texture2D RenderCameraToTexture(Camera cam, RenderTexture rt)
+        {
+            var prevRT = cam.targetTexture;
+            var prevAA = QualitySettings.antiAliasing;
+            QualitySettings.antiAliasing = 0;
+
+            cam.targetTexture = rt;
+            cam.Render();
+
+            RenderTexture.active = rt;
+            var tex = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
+            tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            tex.Apply();
+
+            RenderTexture.active = null;
+            cam.targetTexture = prevRT;
+            QualitySettings.antiAliasing = prevAA;
+
+            return tex;
         }
 
         public void RenderAll()
