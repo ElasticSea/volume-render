@@ -29,7 +29,7 @@ namespace Volumes.Ui
                 (e as Label).style.fontSize = 14;
             };
             listView.itemsSource = volumesViewModel.Volumes.ToList();
-            listView.Refresh();
+            listView.Rebuild();
             
             var loadVolume = root.Q<Button>("loadVolume");
             loadVolume.clicked += () =>
@@ -41,7 +41,7 @@ namespace Volumes.Ui
             uiDocument.rootVisualElement.Q<Button>("refreshAll").clicked += () =>
             {
                 listView.itemsSource = volumesViewModel.Volumes.ToList();
-                listView.Refresh();
+                listView.Rebuild();
             };
         }
     }
